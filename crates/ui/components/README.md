@@ -12,5 +12,5 @@
 
 ```toml
 [dependencies]
-az-ui-components = "2026.8.10"
+az-ui-components = "2026.8.11"
 ```
