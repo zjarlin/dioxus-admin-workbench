@@ -1,0 +1,21 @@
+[package]
+name = "az-ui-components"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Reusable Dioxus controls, data tables, dialogs, and collection trees."
+homepage.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["dioxus", "components", "admin", "table", "wasm"]
+categories = ["gui", "wasm", "web-programming"]
+workspace = "../../.."
+
+[dependencies]
+dioxus = { workspace = true, features = ["hooks", "asset", "document", "mounted"] }
+dioxus-icons = { version = "0.1.0", default-features = false }
+
+[lints]
+workspace = true

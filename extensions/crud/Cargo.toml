@@ -1,0 +1,28 @@
+[package]
+name = "az-dioxus-admin-extension-crud"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Default resource CRUD page extension for az-dioxus-admin-shell."
+homepage.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["dioxus", "admin", "crud", "table", "plugin"]
+categories = ["gui", "wasm", "web-programming"]
+workspace = "../.."
+
+[dependencies]
+anyhow.workspace = true
+az-admin-shell-core.workspace = true
+az-dioxus-admin-shell.workspace = true
+az-ui-components.workspace = true
+dioxus = { workspace = true, features = ["hooks"] }
+icons.workspace = true
+rudi.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

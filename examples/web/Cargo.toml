@@ -1,0 +1,22 @@
+[package]
+name = "admin-workbench-example"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+workspace = "../.."
+
+[dependencies]
+anyhow.workspace = true
+az-admin-shell-core.workspace = true
+az-dioxus-admin-extension-crud.workspace = true
+az-dioxus-admin-shell.workspace = true
+dioxus = { workspace = true, features = ["web", "launch"] }
+rudi.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true
+

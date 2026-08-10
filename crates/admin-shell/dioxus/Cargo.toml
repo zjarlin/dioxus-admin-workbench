@@ -1,0 +1,27 @@
+[package]
+name = "az-dioxus-admin-shell"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Headless, provider-driven Dioxus admin workbench for scenes, menus, convention pages, and extensions."
+homepage.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["dioxus", "admin", "dashboard", "plugin", "workbench"]
+categories = ["gui", "wasm", "web-programming"]
+workspace = "../../.."
+
+[dependencies]
+anyhow.workspace = true
+az-admin-shell-core.workspace = true
+az-ui-components.workspace = true
+dioxus = { workspace = true, features = ["hooks", "document", "asset"] }
+futures-util.workspace = true
+icons.workspace = true
+rudi.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

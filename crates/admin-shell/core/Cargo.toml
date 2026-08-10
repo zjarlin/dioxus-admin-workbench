@@ -1,0 +1,27 @@
+[package]
+name = "az-admin-shell-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Definitions, commands, resource contracts, and extension compiler SPI for Dioxus admin workbenches."
+homepage.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["admin", "dioxus", "plugin", "low-code", "workbench"]
+categories = ["data-structures", "web-programming"]
+workspace = "../../.."
+
+[dependencies]
+anyhow.workspace = true
+convert_case.workspace = true
+deunicode.workspace = true
+rudi.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true
+

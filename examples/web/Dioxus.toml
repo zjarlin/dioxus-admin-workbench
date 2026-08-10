@@ -1,0 +1,6 @@
+[application]
+name = "admin-workbench-example"
+default_platform = "web"
+
+[web.watcher]
+watch_path = ["src"]
