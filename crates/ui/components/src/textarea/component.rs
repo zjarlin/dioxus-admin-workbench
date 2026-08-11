@@ -1,11 +1,6 @@
 use dioxus::prelude::*;
 
-#[css_module("/src/textarea/style.css")]
-struct Styles;
-
-pub(crate) fn load_stylesheet() {
-    drop(Styles::dx_textarea.to_string());
-}
+const TEXTAREA_CLASS: &str = "dx-textarea";
 
 #[derive(Copy, Clone, PartialEq, Default)]
 #[non_exhaustive]
@@ -57,7 +52,7 @@ pub fn Textarea(
 ) -> Element {
     rsx! {
         textarea {
-            class: Styles::dx_textarea,
+            class: TEXTAREA_CLASS,
             "data-slot": "textarea",
             "data-style": variant.class(),
             oninput: move |e| _ = oninput.map(|callback| callback(e)),

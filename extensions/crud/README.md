@@ -4,7 +4,7 @@
 
 ```toml
 [dependencies]
-az-dioxus-admin-extension-crud = "2026.8.11"
+az-dioxus-admin-extension-crud = "2026.8.12"
 ```
 
 消费方只需让该 crate 进入最终二进制并调用 `az_dioxus_admin_extension_crud::enable()`。Studio 会自动出现“资源增删改查”页面类型，运行时通过唯一 `AdminProvider` 执行资源请求。

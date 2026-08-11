@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
-#[css_module("/src/input/style.css")]
-struct Styles;
+
+const INPUT_CLASS: &str = "dx-input";
 
 #[component]
 pub fn Input(
@@ -31,7 +31,7 @@ pub fn Input(
 ) -> Element {
     rsx! {
         input {
-            class: Styles::dx_input,
+            class: INPUT_CLASS,
             oninput: move |e| _ = oninput.map(|callback| callback(e)),
             onchange: move |e| _ = onchange.map(|callback| callback(e)),
             oninvalid: move |e| _ = oninvalid.map(|callback| callback(e)),

@@ -1,8 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_icons::lucide::BadgeCheck;
 
-#[css_module("/src/badge/style.css")]
-struct Styles;
+const BADGE_CLASS: &str = "dx-badge";
 
 #[derive(Copy, Clone, PartialEq, Default)]
 #[non_exhaustive]
@@ -55,7 +54,7 @@ pub fn Badge(props: BadgeProps) -> Element {
 fn BadgeElement(props: BadgeProps) -> Element {
     rsx! {
         span {
-            class: Styles::dx_badge,
+            class: BADGE_CLASS,
             "data-style": props.variant.class(),
             ..props.attributes,
             {props.children}

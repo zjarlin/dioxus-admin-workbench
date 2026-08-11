@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "admin-workbench-example"
-version = "2026.8.11"
+version = "2026.8.12"
 dependencies = [
  "anyhow",
  "az-admin-shell-core",
@@ -142,7 +142,7 @@ dependencies = [
 
 [[package]]
 name = "az-admin-shell-core"
-version = "2026.8.11"
+version = "2026.8.12"
 dependencies = [
  "anyhow",
  "convert_case 0.8.0",
@@ -155,7 +155,7 @@ dependencies = [
 
 [[package]]
 name = "az-dioxus-admin-extension-crud"
-version = "2026.8.11"
+version = "2026.8.12"
 dependencies = [
  "anyhow",
  "az-admin-shell-core",
@@ -170,7 +170,7 @@ dependencies = [
 
 [[package]]
 name = "az-dioxus-admin-shell"
-version = "2026.8.11"
+version = "2026.8.12"
 dependencies = [
  "anyhow",
  "az-admin-shell-core",
@@ -178,16 +178,18 @@ dependencies = [
  "dioxus",
  "futures-util",
  "icons",
+ "manganis",
  "rudi",
  "serde_json",
 ]
 
 [[package]]
 name = "az-ui-components"
-version = "2026.8.11"
+version = "2026.8.12"
 dependencies = [
  "dioxus",
  "dioxus-icons",
+ "manganis",
 ]
 
 [[package]]

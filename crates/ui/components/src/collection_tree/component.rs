@@ -6,12 +6,14 @@ use dioxus_icons::lucide::ChevronRight;
 use super::data::{CollectionTreeData, resolve_visible_items};
 use crate::button::{Button, ButtonSize, ButtonVariant};
 
-#[css_module("/src/collection_tree/style.css")]
-struct Styles;
-
-pub(crate) fn load_stylesheet() {
-    drop(Styles::collection_tree.to_string());
-}
+const TREE_CLASS: &str = "collection-tree";
+const TREE_EMPTY_CLASS: &str = "collection-tree-empty";
+const TREE_ERROR_CLASS: &str = "collection-tree-error";
+const TREE_ITEM_CLASS: &str = "collection-tree-item";
+const TREE_ROW_CLASS: &str = "collection-tree-row";
+const TREE_ROW_SELECTED_CLASS: &str = "collection-tree-row-selected";
+const TREE_SPACER_CLASS: &str = "collection-tree-spacer";
+const TREE_TOGGLE_CLASS: &str = "collection-tree-toggle";
 
 #[derive(Clone, PartialEq)]
 pub struct CollectionTreeItemContext<T: Clone + PartialEq + 'static> {
@@ -50,7 +52,7 @@ pub fn CollectionTree<T: Clone + PartialEq + 'static>(props: CollectionTreeProps
         Err(error) => return collection_tree_error(&error),
     };
     let root_class = classes(
-        &Styles::collection_tree,
+        TREE_CLASS,
         (!props.class.is_empty()).then_some(props.class.as_str()),
     );
     let root_role = if is_tree { "tree" } else { "listbox" };
@@ -59,16 +61,14 @@ pub fn CollectionTree<T: Clone + PartialEq + 'static>(props: CollectionTreeProps
     rsx! {
         div { class: root_class, role: root_role, aria_label: props.aria_label,
             if props.data.is_empty() {
-                div { class: Styles::collection_tree_empty, "{props.empty_text}" }
+                div { class: TREE_EMPTY_CLASS, "{props.empty_text}" }
             }
             for row in rows {
                 {
                     let selected = props.selected_key.as_deref() == Some(row.key.as_str());
                     let row_class = classes(
-                        &Styles::collection_tree_row,
-                        selected
-                            .then_some(Styles::collection_tree_row_selected)
-                            .as_deref(),
+                        TREE_ROW_CLASS,
+                        selected.then_some(TREE_ROW_SELECTED_CLASS),
                     );
                     let row_style = format!("--collection-tree-depth:{};", row.depth);
                     let key_for_toggle = row.key.clone();
@@ -95,7 +95,7 @@ pub fn CollectionTree<T: Clone + PartialEq + 'static>(props: CollectionTreeProps
                                 if row.has_children {
                                     Button {
                                         r#type: "button",
-                                        class: Styles::collection_tree_toggle,
+                                        class: TREE_TOGGLE_CLASS,
                                         size: ButtonSize::IconXs,
                                         variant: ButtonVariant::Ghost,
                                         title: if row.expanded { "收起子项" } else { "展开子项" },
@@ -110,12 +110,12 @@ pub fn CollectionTree<T: Clone + PartialEq + 'static>(props: CollectionTreeProps
                                         ChevronRight { class: "size-3" }
                                     }
                                 } else {
-                                    span { class: Styles::collection_tree_spacer, aria_hidden: "true" }
+                                    span { class: TREE_SPACER_CLASS, aria_hidden: "true" }
                                 }
                             }
                             Button {
                                 r#type: "button",
-                                class: Styles::collection_tree_item,
+                                class: TREE_ITEM_CLASS,
                                 variant: ButtonVariant::Ghost,
                                 onclick: move |_| {
                                     if let Some(handler) = props.on_select {
@@ -134,7 +134,7 @@ pub fn CollectionTree<T: Clone + PartialEq + 'static>(props: CollectionTreeProps
 
 fn collection_tree_error(error: &str) -> Element {
     rsx! {
-        div { class: Styles::collection_tree_error, role: "alert", "集合树配置错误：{error}" }
+        div { class: TREE_ERROR_CLASS, role: "alert", "集合树配置错误：{error}" }
     }
 }
 

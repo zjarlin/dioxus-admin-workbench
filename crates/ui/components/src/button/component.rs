@@ -1,8 +1,7 @@
 use crate::attributes::with_class;
 use dioxus::prelude::*;
 
-#[css_module("/src/button/style.css")]
-struct Styles;
+const BUTTON_CLASS: &str = "dx-button";
 
 #[derive(Copy, Clone, PartialEq, Default)]
 #[non_exhaustive]
@@ -71,7 +70,7 @@ pub fn Button(
     onkeydown: Option<EventHandler<KeyboardEvent>>,
     children: Element,
 ) -> Element {
-    let attributes = with_class(attributes, Styles::dx_button.to_string());
+    let attributes = with_class(attributes, BUTTON_CLASS.to_owned());
 
     rsx! {
         button {

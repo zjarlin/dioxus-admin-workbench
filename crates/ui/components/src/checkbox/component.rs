@@ -4,12 +4,8 @@ use crate::attributes::with_class;
 use dioxus::prelude::*;
 use dioxus_icons::lucide::Check;
 
-#[css_module("/src/checkbox/style.css")]
-struct Styles;
-
-pub(crate) fn load_stylesheet() {
-    drop(Styles::dx_checkbox.to_string());
-}
+const CHECKBOX_CLASS: &str = "dx-checkbox";
+const CHECKBOX_INDICATOR_CLASS: &str = "dx-checkbox-indicator";
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum CheckboxState {
@@ -85,7 +81,7 @@ pub fn Checkbox(props: CheckboxProps) -> Element {
     let mut internal = use_signal(|| (props.checked)().unwrap_or(props.default_checked));
     let checked = use_memo(move || (props.checked)().unwrap_or_else(|| internal()));
     let mut button_ref: Signal<Option<Rc<MountedData>>> = use_signal(|| None);
-    let attributes = with_class(props.attributes, Styles::dx_checkbox.to_string());
+    let attributes = with_class(props.attributes, CHECKBOX_CLASS.to_owned());
 
     use_context_provider(|| CheckboxContext {
         checked,
@@ -143,7 +139,7 @@ fn CheckboxIndicator() -> Element {
     let checked = (context.checked)();
     rsx! {
         span {
-            class: Styles::dx_checkbox_indicator,
+            class: CHECKBOX_INDICATOR_CLASS,
             "data-state": checked.data_state(),
             "data-disabled": context.disabled,
             if bool::from(checked) {

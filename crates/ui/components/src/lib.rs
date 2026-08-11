@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 
 mod attributes;
+mod stylesheets;
 
 pub mod badge;
 pub mod button;
@@ -12,10 +13,4 @@ pub mod dialog;
 pub mod input;
 pub mod textarea;
 
-pub fn load_deferred_stylesheets() {
-    checkbox::load_stylesheet();
-    collection_tree::load_stylesheet();
-    data_table::load_stylesheet();
-    dialog::load_stylesheet();
-    textarea::load_stylesheet();
-}
+pub use stylesheets::UiStylesheets;

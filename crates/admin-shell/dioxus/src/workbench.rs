@@ -14,8 +14,23 @@ use crate::{
     scene_dialog::SceneDialog,
 };
 
-#[css_module("/src/style.css")]
-struct Styles;
+const SHELL_STYLESHEET: Asset = asset!("/src/style.css", AssetOptions::css());
+const SHELL_CLASS: &str = "admin-shell";
+const SIDEBAR_CLASS: &str = "admin-shell__sidebar";
+const SIDEBAR_HEADER_CLASS: &str = "admin-shell__sidebar-header";
+const SIDEBAR_FOOTER_CLASS: &str = "admin-shell__sidebar-footer";
+const BRAND_CLASS: &str = "admin-shell__brand";
+const ACTION_LABEL_CLASS: &str = "admin-shell__action-label";
+const MENU_CLASS: &str = "admin-shell__menu";
+const MENU_ROW_CLASS: &str = "admin-shell__menu-row";
+const MENU_ROW_ACTIVE_CLASS: &str = "admin-shell__menu-row--active";
+const MENU_CHILDREN_CLASS: &str = "admin-shell__menu-children";
+const MAIN_CLASS: &str = "admin-shell__main";
+const TOPBAR_CLASS: &str = "admin-shell__topbar";
+const SCENES_CLASS: &str = "admin-shell__scenes";
+const STATUS_CLASS: &str = "admin-shell__status";
+const CONTENT_CLASS: &str = "admin-shell__content";
+const STATE_CLASS: &str = "admin-shell__state";
 
 #[allow(non_snake_case)]
 pub fn App() -> Element {
@@ -62,7 +77,6 @@ pub fn AdminShell(
     renderer_extensions: Arc<PageExtensionRendererIndex>,
     convention_pages: Arc<ConventionPageIndex>,
 ) -> Element {
-    az_ui_components::load_deferred_stylesheets();
     let generation = use_signal(|| 0_u64);
     let mut selected_scene = use_signal(|| None::<DefinitionId>);
     let mut selected_page = use_signal(|| None::<DefinitionId>);
@@ -78,17 +92,17 @@ pub fn AdminShell(
     });
     let loaded = snapshot.read().as_ref().cloned();
     let Some(loaded) = loaded else {
-        return rsx! { div { class: Styles::state, "正在加载工作台..." } };
+        return styled_shell(rsx! { div { class: STATE_CLASS, "正在加载工作台..." } });
     };
     let Ok(snapshot) = loaded else {
-        return error_state(
+        return styled_shell(error_state(
             "加载工作台失败",
             loaded
                 .as_ref()
                 .err()
                 .map(String::as_str)
                 .unwrap_or_default(),
-        );
+        ));
     };
 
     let active_scene_id = selected_scene()
@@ -125,14 +139,14 @@ pub fn AdminShell(
                 &convention_pages,
             )
         })
-        .unwrap_or_else(|| rsx! { div { class: Styles::state, "请选择菜单页面" } });
+        .unwrap_or_else(|| rsx! { div { class: STATE_CLASS, "请选择菜单页面" } });
 
-    rsx! {
+    styled_shell(rsx! {
         div {
-            class: Styles::shell,
+            class: SHELL_CLASS,
             "data-sidebar-collapsed": sidebar_collapsed().to_string(),
-            aside { class: Styles::sidebar,
-                header { class: Styles::sidebar_header,
+            aside { class: SIDEBAR_CLASS,
+                header { class: SIDEBAR_HEADER_CLASS,
                     Button {
                         size: ButtonSize::IconSm,
                         variant: ButtonVariant::Ghost,
@@ -141,20 +155,20 @@ pub fn AdminShell(
                         onclick: move |_| sidebar_collapsed.toggle(),
                         PanelLeft { class: "size-4" }
                     }
-                    strong { class: Styles::brand, "{snapshot.definition.title}" }
+                    strong { class: BRAND_CLASS, "{snapshot.definition.title}" }
                 }
-                nav { class: Styles::menu, aria_label: "页面菜单",
+                nav { class: MENU_CLASS, aria_label: "页面菜单",
                     if let Some(scene) = active_scene {
                         {menu_items(
                             &scene.menus,
                             selected_page,
-                            Styles::menu_row.to_string(),
-                            Styles::menu_row_active.to_string(),
-                            Styles::menu_children.to_string(),
+                            MENU_ROW_CLASS.to_owned(),
+                            MENU_ROW_ACTIVE_CLASS.to_owned(),
+                            MENU_CHILDREN_CLASS.to_owned(),
                         )}
                     }
                 }
-                footer { class: Styles::sidebar_footer,
+                footer { class: SIDEBAR_FOOTER_CLASS,
                     Button {
                         size: ButtonSize::Sm,
                         variant: ButtonVariant::Outline,
@@ -163,19 +177,19 @@ pub fn AdminShell(
                         aria_label: "新建菜单",
                         onclick: move |_| menu_dialog_open.set(true),
                         Plus { class: "size-4" }
-                        span { class: Styles::action_label, "新建菜单" }
+                        span { class: ACTION_LABEL_CLASS, "新建菜单" }
                     }
                 }
             }
-            main { class: Styles::main,
-                header { class: Styles::topbar,
+            main { class: MAIN_CLASS,
+                header { class: TOPBAR_CLASS,
                     h1 {
                         {active_page_id
                             .as_ref()
                             .and_then(|id| snapshot.compiled.pages.get(id))
                             .map_or(snapshot.definition.title.as_str(), |page| page.title.as_str())}
                     }
-                    nav { class: Styles::scenes, aria_label: "场景",
+                    nav { class: SCENES_CLASS, aria_label: "场景",
                         for scene in &snapshot.definition.scenes {
                             Button {
                                 key: "{scene.id}",
@@ -206,9 +220,9 @@ pub fn AdminShell(
                     }
                 }
                 if let Some(message) = status() {
-                    div { class: Styles::status, role: "status", "{message}" }
+                    div { class: STATUS_CLASS, role: "status", "{message}" }
                 }
-                section { class: Styles::content, {content} }
+                section { class: CONTENT_CLASS, {content} }
             }
             if scene_dialog_open() {
                 SceneDialog {
@@ -233,5 +247,26 @@ pub fn AdminShell(
                 }
             }
         }
+    })
+}
+
+fn styled_shell(content: Element) -> Element {
+    rsx! {
+        az_ui_components::UiStylesheets {}
+        document::Stylesheet { href: SHELL_STYLESHEET }
+        {content}
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{MENU_ROW_ACTIVE_CLASS, SHELL_CLASS};
+
+    #[test]
+    fn shell_stylesheet_keeps_stable_domain_classes() {
+        let stylesheet = include_str!("style.css");
+
+        assert!(stylesheet.contains(&format!(".{SHELL_CLASS}")));
+        assert!(stylesheet.contains(&format!(".{MENU_ROW_ACTIVE_CLASS}")));
     }
 }

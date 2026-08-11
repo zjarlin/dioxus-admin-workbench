@@ -16,6 +16,7 @@ workspace = "../../.."
 [dependencies]
 dioxus = { workspace = true, features = ["hooks", "asset", "document", "mounted"] }
 dioxus-icons = { version = "0.1.0", default-features = false }
+manganis.workspace = true
 
 [lints]
 workspace = true

@@ -5,12 +5,26 @@ use super::layout::{
     ResolvedLeafColumn, resolve_body_grid, resolve_header_rows, resolve_leaf_columns,
 };
 
-#[css_module("/src/data_table/style.css")]
-struct Styles;
-
-pub(crate) fn load_stylesheet() {
-    drop(Styles::data_table_root.to_string());
-}
+const TABLE_CLASS: &str = "data-table";
+const TABLE_ALIGN_CENTER_CLASS: &str = "data-table-align-center";
+const TABLE_ALIGN_END_CLASS: &str = "data-table-align-end";
+const TABLE_ALIGN_START_CLASS: &str = "data-table-align-start";
+const TABLE_CELL_CLASS: &str = "data-table-cell";
+const TABLE_CELL_EDITABLE_CLASS: &str = "data-table-cell-editable";
+const TABLE_CELL_EDITING_CLASS: &str = "data-table-cell-editing";
+const TABLE_EMPTY_CLASS: &str = "data-table-empty";
+const TABLE_ERROR_CLASS: &str = "data-table-error";
+const TABLE_FIXED_LEFT_CLASS: &str = "data-table-fixed-left";
+const TABLE_FIXED_RIGHT_CLASS: &str = "data-table-fixed-right";
+const TABLE_HEADER_CELL_CLASS: &str = "data-table-header-cell";
+const TABLE_HEADER_GROUP_CLASS: &str = "data-table-header-group";
+const TABLE_PANEL_CLASS: &str = "data-table-panel";
+const TABLE_ROOT_CLASS: &str = "data-table-root";
+const TABLE_ROW_CLASS: &str = "data-table-row";
+const TABLE_ROW_SELECTED_CLASS: &str = "data-table-row-selected";
+const TABLE_VIEWPORT_CLASS: &str = "data-table-viewport";
+const TABLE_WORKSPACE_CLASS: &str = "data-table-workspace";
+const TABLE_WORKSPACE_WITH_PANEL_CLASS: &str = "data-table-workspace-with-panel";
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum DataTableEditTrigger {
@@ -102,13 +116,11 @@ pub fn DataTable<R: Clone + PartialEq + 'static>(props: DataTableProps<R>) -> El
         .sum::<u32>();
     let has_right_panel = props.right_panel.is_some();
     let workspace_class = classes(
-        &Styles::data_table_workspace,
-        has_right_panel
-            .then_some(Styles::data_table_workspace_with_panel)
-            .as_deref(),
+        TABLE_WORKSPACE_CLASS,
+        has_right_panel.then_some(TABLE_WORKSPACE_WITH_PANEL_CLASS),
     );
     let root_class = classes(
-        &Styles::data_table_root,
+        TABLE_ROOT_CLASS,
         (!props.class.is_empty()).then_some(props.class.as_str()),
     );
     let root_style = format!(
@@ -121,9 +133,9 @@ pub fn DataTable<R: Clone + PartialEq + 'static>(props: DataTableProps<R>) -> El
     rsx! {
         div { class: root_class, style: root_style,
             div { class: workspace_class,
-                div { class: Styles::data_table_viewport,
+                div { class: TABLE_VIEWPORT_CLASS,
                     table {
-                        class: Styles::data_table,
+                        class: TABLE_CLASS,
                         style: table_style,
                         aria_label: props.aria_label,
                         "data-sticky-header": props.sticky_header.to_string(),
@@ -170,11 +182,11 @@ pub fn DataTable<R: Clone + PartialEq + 'static>(props: DataTableProps<R>) -> El
                         }
                     }
                     if props.rows.is_empty() {
-                        div { class: Styles::data_table_empty, "{props.empty_text}" }
+                        div { class: TABLE_EMPTY_CLASS, "{props.empty_text}" }
                     }
                 }
                 if let Some(panel) = right_panel {
-                    aside { class: Styles::data_table_panel, aria_label: "表格编辑区",
+                    aside { class: TABLE_PANEL_CLASS, aria_label: "表格编辑区",
                         {panel}
                     }
                 }
@@ -195,10 +207,8 @@ fn render_row<R: Clone + PartialEq + 'static>(
     let row_key = props.row_key.call(row.clone());
     let selected = props.selected_row_key.as_deref() == Some(row_key.as_str());
     let row_class = classes(
-        &Styles::data_table_row,
-        selected
-            .then_some(Styles::data_table_row_selected)
-            .as_deref(),
+        TABLE_ROW_CLASS,
+        selected.then_some(TABLE_ROW_SELECTED_CLASS),
     );
     let row_for_select = row.clone();
     let on_row_select = props.on_row_select;
@@ -321,7 +331,7 @@ fn render_cell<R: Clone + PartialEq + 'static>(
 
 fn table_error(error: &str) -> Element {
     rsx! {
-        div { class: Styles::data_table_error, role: "alert", "表格配置错误：{error}" }
+        div { class: TABLE_ERROR_CLASS, role: "alert", "表格配置错误：{error}" }
     }
 }
 
@@ -356,12 +366,12 @@ fn classes(base: &str, extra: Option<&str>) -> String {
 fn header_class(fixed: DataTableFixed, group: bool) -> String {
     let fixed_class = match fixed {
         DataTableFixed::None => None,
-        DataTableFixed::Left => Some(Styles::data_table_fixed_left),
-        DataTableFixed::Right => Some(Styles::data_table_fixed_right),
+        DataTableFixed::Left => Some(TABLE_FIXED_LEFT_CLASS),
+        DataTableFixed::Right => Some(TABLE_FIXED_RIGHT_CLASS),
     };
-    let class = classes(&Styles::data_table_header_cell, fixed_class.as_deref());
+    let class = classes(TABLE_HEADER_CELL_CLASS, fixed_class);
     if group {
-        format!("{class} {}", Styles::data_table_header_group)
+        format!("{class} {TABLE_HEADER_GROUP_CLASS}")
     } else {
         class
     }
@@ -379,25 +389,25 @@ fn header_style(header: &super::layout::DataTableHeaderCell) -> String {
 fn body_cell_class(leaf: &ResolvedLeafColumn, editable: bool, editing: bool) -> String {
     let fixed_class = match leaf.column.fixed {
         DataTableFixed::None => None,
-        DataTableFixed::Left => Some(Styles::data_table_fixed_left),
-        DataTableFixed::Right => Some(Styles::data_table_fixed_right),
+        DataTableFixed::Left => Some(TABLE_FIXED_LEFT_CLASS),
+        DataTableFixed::Right => Some(TABLE_FIXED_RIGHT_CLASS),
     };
-    let mut class = classes(&Styles::data_table_cell, fixed_class.as_deref());
+    let mut class = classes(TABLE_CELL_CLASS, fixed_class);
     if editable {
         class.push(' ');
-        class.push_str(&Styles::data_table_cell_editable);
+        class.push_str(TABLE_CELL_EDITABLE_CLASS);
     }
     if editing {
         class.push(' ');
-        class.push_str(&Styles::data_table_cell_editing);
+        class.push_str(TABLE_CELL_EDITING_CLASS);
     }
     let align_class = match leaf.column.align {
-        DataTableAlign::Start => Styles::data_table_align_start,
-        DataTableAlign::Center => Styles::data_table_align_center,
-        DataTableAlign::End => Styles::data_table_align_end,
+        DataTableAlign::Start => TABLE_ALIGN_START_CLASS,
+        DataTableAlign::Center => TABLE_ALIGN_CENTER_CLASS,
+        DataTableAlign::End => TABLE_ALIGN_END_CLASS,
     };
     class.push(' ');
-    class.push_str(&align_class);
+    class.push_str(align_class);
     class
 }
 

@@ -12,5 +12,8 @@
 
 ```toml
 [dependencies]
-az-ui-components = "2026.8.11"
+az-ui-components = "2026.8.12"
 ```
+
+`az-dioxus-admin-shell` 会自动加载组件样式。直接使用本 crate 时，在应用根节点渲染一次
+`UiStylesheets`；样式资产随 crate 发布，不要求消费方扫描依赖源码或复制 CSS。

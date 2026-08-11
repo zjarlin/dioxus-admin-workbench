@@ -3,12 +3,10 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use crate::attributes::with_class;
 use dioxus::prelude::*;
 
-#[css_module("/src/dialog/style.css")]
-struct Styles;
-
-pub(crate) fn load_stylesheet() {
-    drop(Styles::dx_dialog.to_string());
-}
+const DIALOG_CLASS: &str = "dx-dialog";
+const DIALOG_BACKDROP_CLASS: &str = "dx-dialog-backdrop";
+const DIALOG_TITLE_CLASS: &str = "dx-dialog-title";
+const DIALOG_DESCRIPTION_CLASS: &str = "dx-dialog-description";
 
 fn unique_id(prefix: &str) -> String {
     static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
@@ -46,7 +44,7 @@ pub fn Dialog(props: DialogProps) -> Element {
     let root_id = use_signal(|| (props.id)().unwrap_or_else(|| unique_id("dialog")));
     let title_id = use_signal(|| unique_id("dialog-title"));
     let description_id = use_signal(|| unique_id("dialog-description"));
-    let attributes = with_class(props.attributes, Styles::dx_dialog.to_string());
+    let attributes = with_class(props.attributes, DIALOG_CLASS.to_owned());
 
     use_context_provider(|| DialogContext {
         title_id,
@@ -66,7 +64,7 @@ pub fn Dialog(props: DialogProps) -> Element {
 
     rsx! {
         div {
-            class: Styles::dx_dialog_backdrop,
+            class: DIALOG_BACKDROP_CLASS,
             "data-state": "open",
             onclick: move |_| close.call(()),
             div {
@@ -109,7 +107,7 @@ pub struct DialogTitleProps {
 pub fn DialogTitle(props: DialogTitleProps) -> Element {
     let context: DialogContext = use_context();
     let id = (props.id)().unwrap_or_else(|| (context.title_id)());
-    let attributes = with_class(props.attributes, Styles::dx_dialog_title.to_string());
+    let attributes = with_class(props.attributes, DIALOG_TITLE_CLASS.to_owned());
     rsx! {
         h2 { id, ..attributes, {props.children} }
     }
@@ -128,7 +126,7 @@ pub struct DialogDescriptionProps {
 pub fn DialogDescription(props: DialogDescriptionProps) -> Element {
     let context: DialogContext = use_context();
     let id = (props.id)().unwrap_or_else(|| (context.description_id)());
-    let attributes = with_class(props.attributes, Styles::dx_dialog_description.to_string());
+    let attributes = with_class(props.attributes, DIALOG_DESCRIPTION_CLASS.to_owned());
     rsx! {
         p { id, ..attributes, {props.children} }
     }

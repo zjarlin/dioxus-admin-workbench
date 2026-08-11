@@ -4,7 +4,7 @@
 
 ```toml
 [dependencies]
-az-admin-shell-core = "2026.8.11"
+az-admin-shell-core = "2026.8.12"
 ```
 
 页面来源只有两类：消费方约定文件，或通过 Rudi 注册的扩展。CRUD 是独立扩展，不属于核心枚举。
