@@ -1,0 +1,86 @@
+.dx-graph-canvas {
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.dx-graph-node {
+  position: absolute;
+  z-index: 1;
+  width: 13rem;
+  overflow: visible;
+  border: 1px solid var(--border);
+  border-radius: .375rem;
+  background: var(--background);
+  box-shadow: 0 1px 3px rgb(0 0 0 / .08);
+}
+
+.dx-graph-node[data-state="dragging"] {
+  z-index: 3;
+  border-color: var(--ring);
+  box-shadow: 0 6px 18px rgb(0 0 0 / .14);
+}
+
+.dx-graph-node[data-state="connection-source"] {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
+.dx-graph-node > header {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  border-bottom: 1px solid var(--border);
+  padding: .5rem .625rem;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.dx-graph-node[data-state="dragging"] > header {
+  cursor: grabbing;
+}
+
+.dx-graph-node > header > strong {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dx-graph-node > header > :last-child {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.dx-graph-node > p {
+  min-height: 2.25rem;
+  padding: .5rem .625rem;
+  color: var(--muted-foreground);
+  font-size: .6875rem;
+}
+
+.dx-graph-node > footer {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .375rem;
+  border-top: 1px solid var(--border);
+  padding: .375rem .5rem;
+}
+
+.dx-tree-indent {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: .375rem;
+  padding-left: calc(var(--dx-tree-depth, 0) * 1.25rem);
+}
+
+.dx-tree-indent[data-root="true"] {
+  font-weight: 650;
+}

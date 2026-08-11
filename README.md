@@ -15,9 +15,9 @@ Dioxus Admin Workbench 是一个由正式定义和编译期 Provider 驱动的�
 
 ```toml
 [dependencies]
-az-admin-shell-core = "2026.8.12"
-az-dioxus-admin-shell = "2026.8.12"
-az-dioxus-admin-extension-crud = "2026.8.12"
+az-admin-shell-core = "2026.8.13"
+az-dioxus-admin-shell = "2026.8.13"
+az-dioxus-admin-extension-crud = "2026.8.13"
 ```
 
 ## Register the application provider

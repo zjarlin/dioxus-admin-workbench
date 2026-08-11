@@ -11,6 +11,7 @@ pub mod collection_tree;
 pub mod data_table;
 pub mod dialog;
 pub mod input;
+pub mod spatial;
 pub mod textarea;
 
 pub use stylesheets::UiStylesheets;

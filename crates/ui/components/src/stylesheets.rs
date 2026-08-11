@@ -1,5 +1,8 @@
 use dioxus::prelude::*;
 
+const UTILITIES_STYLESHEET: Asset = asset!("/src/utilities.css", AssetOptions::css());
+const THEME_STYLESHEET: Asset = asset!("/src/theme.css", AssetOptions::css());
+const WORKBENCH_STYLESHEET: Asset = asset!("/src/workbench.css", AssetOptions::css());
 const BADGE_STYLESHEET: Asset = asset!("/src/badge/style.css", AssetOptions::css());
 const BUTTON_STYLESHEET: Asset = asset!("/src/button/style.css", AssetOptions::css());
 const CHECKBOX_STYLESHEET: Asset = asset!("/src/checkbox/style.css", AssetOptions::css());
@@ -8,12 +11,16 @@ const COLLECTION_TREE_STYLESHEET: Asset =
 const DATA_TABLE_STYLESHEET: Asset = asset!("/src/data_table/style.css", AssetOptions::css());
 const DIALOG_STYLESHEET: Asset = asset!("/src/dialog/style.css", AssetOptions::css());
 const INPUT_STYLESHEET: Asset = asset!("/src/input/style.css", AssetOptions::css());
+const SPATIAL_STYLESHEET: Asset = asset!("/src/spatial/style.css", AssetOptions::css());
 const TEXTAREA_STYLESHEET: Asset = asset!("/src/textarea/style.css", AssetOptions::css());
 
 /// 加载后台组件使用的稳定样式资源。
 #[component]
 pub fn UiStylesheets() -> Element {
     rsx! {
+        document::Stylesheet { href: UTILITIES_STYLESHEET }
+        document::Stylesheet { href: THEME_STYLESHEET }
+        document::Stylesheet { href: WORKBENCH_STYLESHEET }
         document::Stylesheet { href: BADGE_STYLESHEET }
         document::Stylesheet { href: BUTTON_STYLESHEET }
         document::Stylesheet { href: CHECKBOX_STYLESHEET }
@@ -21,6 +28,7 @@ pub fn UiStylesheets() -> Element {
         document::Stylesheet { href: DATA_TABLE_STYLESHEET }
         document::Stylesheet { href: DIALOG_STYLESHEET }
         document::Stylesheet { href: INPUT_STYLESHEET }
+        document::Stylesheet { href: SPATIAL_STYLESHEET }
         document::Stylesheet { href: TEXTAREA_STYLESHEET }
     }
 }
@@ -40,6 +48,7 @@ mod tests {
             (include_str!("data_table/style.css"), ".data-table-root"),
             (include_str!("dialog/style.css"), ".dx-dialog"),
             (include_str!("input/style.css"), ".dx-input"),
+            (include_str!("spatial/style.css"), ".dx-graph-canvas"),
             (include_str!("textarea/style.css"), ".dx-textarea"),
         ];
 
@@ -49,5 +58,12 @@ mod tests {
                 "样式资源缺少稳定类名：{class_name}"
             );
         }
+    }
+
+    #[test]
+    fn published_stylesheets_own_theme_and_workbench_layout() {
+        assert!(include_str!("theme.css").contains("--primary-color"));
+        assert!(include_str!("workbench.css").contains(".aio-studio-shell"));
+        assert!(include_str!("utilities.css").contains(".size-4"));
     }
 }
