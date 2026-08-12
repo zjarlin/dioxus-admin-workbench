@@ -74,6 +74,15 @@
   background: var(--primary-color-4);
 }
 
+.data-table-row-muted .data-table-cell {
+  background: color-mix(in oklab, var(--muted) 55%, var(--background));
+  color: var(--muted-foreground);
+}
+
+.data-table-row-muted:hover .data-table-cell {
+  background: color-mix(in oklab, var(--muted) 75%, var(--background));
+}
+
 .data-table-row-selected .data-table-cell {
   box-shadow: inset 0 1px 0 var(--focused-border-color), inset 0 -1px 0 var(--focused-border-color);
 }

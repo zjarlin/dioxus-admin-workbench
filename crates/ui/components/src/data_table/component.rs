@@ -21,6 +21,7 @@ const TABLE_HEADER_GROUP_CLASS: &str = "data-table-header-group";
 const TABLE_PANEL_CLASS: &str = "data-table-panel";
 const TABLE_ROOT_CLASS: &str = "data-table-root";
 const TABLE_ROW_CLASS: &str = "data-table-row";
+const TABLE_ROW_MUTED_CLASS: &str = "data-table-row-muted";
 const TABLE_ROW_SELECTED_CLASS: &str = "data-table-row-selected";
 const TABLE_VIEWPORT_CLASS: &str = "data-table-viewport";
 const TABLE_WORKSPACE_CLASS: &str = "data-table-workspace";
@@ -32,6 +33,13 @@ pub enum DataTableEditTrigger {
     #[default]
     DoubleClick,
     Manual,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum DataTableRowTone {
+    #[default]
+    Default,
+    Muted,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -78,6 +86,8 @@ pub struct DataTableProps<R: Clone + PartialEq + 'static> {
     pub selected_row_key: Option<String>,
     #[props(default)]
     pub on_row_select: Option<EventHandler<R>>,
+    #[props(default)]
+    pub row_tone: Option<Callback<R, DataTableRowTone>>,
     #[props(default)]
     pub right_panel: Option<Element>,
     #[props(default = "32rem".to_owned())]
@@ -206,10 +216,19 @@ fn render_row<R: Clone + PartialEq + 'static>(
 ) -> Element {
     let row_key = props.row_key.call(row.clone());
     let selected = props.selected_row_key.as_deref() == Some(row_key.as_str());
-    let row_class = classes(
+    let tone = props
+        .row_tone
+        .map_or(DataTableRowTone::Default, |row_tone| {
+            row_tone.call(row.clone())
+        });
+    let mut row_class = classes(
         TABLE_ROW_CLASS,
-        selected.then_some(TABLE_ROW_SELECTED_CLASS),
+        (tone == DataTableRowTone::Muted).then_some(TABLE_ROW_MUTED_CLASS),
     );
+    if selected {
+        row_class.push(' ');
+        row_class.push_str(TABLE_ROW_SELECTED_CLASS);
+    }
     let row_for_select = row.clone();
     let on_row_select = props.on_row_select;
 
