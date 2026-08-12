@@ -9,7 +9,7 @@ use az_ui_components::{
     dialog::{Dialog, DialogDescription, DialogTitle},
     input::Input,
     navigation_icon::{DEFAULT_NAVIGATION_ICON, NavigationIconPicker},
-    select::{Select, SelectItem},
+    select::{Select, SelectItem, SelectPlacement},
 };
 use dioxus::prelude::*;
 use serde_json::Value;
@@ -150,6 +150,7 @@ pub(crate) fn MenuDialog(
                     aria_label: "页面来源",
                     value: renderer,
                     options: renderer_options,
+                    placement: SelectPlacement::Top,
                     on_value_change: move |next: String| {
                         if next == "convention" {
                             config.set(Value::Object(Default::default()));
