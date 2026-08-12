@@ -71,28 +71,15 @@
   white-space: nowrap;
 }
 
-.admin-shell__brand.dx-button {
+.admin-shell__brand {
   min-width: 0;
   flex: 1;
-  justify-content: flex-start;
-  padding-inline: .5rem;
-}
-
-.admin-shell__brand strong {
-  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.admin-shell__brand-edit {
+.admin-shell__brand-edit-button {
   margin-left: auto;
-  opacity: 0;
-  transition: opacity 150ms ease;
-}
-
-.admin-shell__brand:hover .admin-shell__brand-edit,
-.admin-shell__brand:focus-visible .admin-shell__brand-edit {
-  opacity: 1;
 }
 
 .admin-shell__application-dialog {
@@ -139,6 +126,7 @@
 }
 
 .admin-shell[data-sidebar-collapsed="true"] .admin-shell__brand,
+.admin-shell[data-sidebar-collapsed="true"] .admin-shell__brand-edit-button,
 .admin-shell[data-sidebar-collapsed="true"] .admin-shell__action-label,
 .admin-shell[data-sidebar-collapsed="true"] .admin-shell__menu-row span:last-child {
   display: none;
@@ -239,6 +227,7 @@
   }
 
   .admin-shell__brand,
+  .admin-shell__brand-edit-button,
   .admin-shell__action-label,
   .admin-shell__menu-row span:last-child {
     display: none;

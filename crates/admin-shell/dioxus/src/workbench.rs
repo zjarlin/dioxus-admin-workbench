@@ -157,15 +157,16 @@ pub fn AdminShell(
                         onclick: move |_| sidebar_collapsed.toggle(),
                         PanelLeft { class: "size-4" }
                     }
+                    strong { class: BRAND_CLASS, "{snapshot.definition.title}" }
                     Button {
-                        class: BRAND_CLASS,
+                        class: "admin-shell__brand-edit-button",
                         r#type: "button",
+                        size: ButtonSize::IconXs,
                         variant: ButtonVariant::Ghost,
                         title: "编辑应用标题",
                         aria_label: "编辑应用标题",
                         onclick: move |_| application_dialog_open.set(true),
-                        strong { "{snapshot.definition.title}" }
-                        Pencil { class: "size-3 admin-shell__brand-edit" }
+                        Pencil { class: "size-3" }
                     }
                 }
                 nav { class: MENU_CLASS, aria_label: "页面菜单",
