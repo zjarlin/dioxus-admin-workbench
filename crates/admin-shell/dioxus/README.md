@@ -7,8 +7,8 @@
 ```toml
 [dependencies]
 az-admin-shell-core = "2026.8.13"
-az-dioxus-admin-shell = "2026.8.13"
-az-dioxus-admin-extension-crud = "2026.8.13"
+az-dioxus-admin-shell = "2026.8.17"
+az-dioxus-admin-extension-crud = "2026.8.17"
 ```
 
 消费方实现并注册一个 `AdminProvider`，然后启动 `az_dioxus_admin_shell::App`。完整示例位于仓库 `examples/web`。

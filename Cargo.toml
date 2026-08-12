@@ -20,9 +20,9 @@ repository = "https://github.com/zjarlin/dioxus-admin-workbench"
 [workspace.dependencies]
 anyhow = "1.0.99"
 az-admin-shell-core = { version = "=2026.8.13", path = "crates/admin-shell/core" }
-az-dioxus-admin-extension-crud = { version = "=2026.8.13", path = "extensions/crud" }
-az-dioxus-admin-shell = { version = "=2026.8.13", path = "crates/admin-shell/dioxus" }
-az-ui-components = { version = "=2026.8.13", path = "crates/ui/components" }
+az-dioxus-admin-extension-crud = { version = "=2026.8.17", path = "extensions/crud" }
+az-dioxus-admin-shell = { version = "=2026.8.17", path = "crates/admin-shell/dioxus" }
+az-ui-components = { version = "=2026.8.17", path = "crates/ui/components" }
 dioxus = { version = "=0.7.9", default-features = false, features = ["macro", "html", "signals"] }
 dioxus-icons = { version = "0.1.0", default-features = false }
 convert_case = "0.8.0"

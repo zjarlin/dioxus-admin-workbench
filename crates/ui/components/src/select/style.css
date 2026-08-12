@@ -1,0 +1,174 @@
+/* 下拉选择器根容器 */
+.dx-select {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  color: var(--foreground);
+  font: inherit;
+}
+
+/* 与文本输入框保持一致的触发控件 */
+.dx-select-trigger {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.25rem;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  border: 1px solid var(--input);
+  border-radius: .375rem;
+  background: var(--background);
+  padding: .5rem .75rem;
+  color: var(--foreground);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.25rem;
+  outline: none;
+  text-align: left;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.dx-select-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dx-select-trigger:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--foreground) 24%, var(--input));
+  background: color-mix(in srgb, var(--muted) 24%, var(--background));
+}
+
+.dx-select-trigger:focus-visible,
+.dx-select[data-state="open"] .dx-select-trigger {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 22%, transparent);
+}
+
+.dx-select-trigger span[data-placeholder="true"] {
+  color: var(--muted-foreground);
+}
+
+.dx-select-expand-icon {
+  flex: 0 0 auto;
+  color: var(--muted-foreground);
+  transition: transform 150ms ease;
+}
+
+.dx-select[data-state="open"] .dx-select-expand-icon {
+  transform: rotate(180deg);
+}
+
+.dx-select[data-disabled="true"] .dx-select-trigger {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+/* 浮层使用后台表单的白底和细边框语义 */
+.dx-select-list {
+  position: absolute;
+  z-index: 1000;
+  top: calc(100% + .25rem);
+  left: 0;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(24rem, calc(100vw - 2rem));
+  max-height: 16rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: .375rem;
+  background: var(--popover, var(--background));
+  box-shadow: 0 12px 28px rgb(0 0 0 / 14%), 0 2px 8px rgb(0 0 0 / 8%);
+  color: var(--popover-foreground, var(--foreground));
+  padding: .25rem;
+  outline: none;
+  transform-origin: top;
+}
+
+.dx-select-dismiss {
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+}
+
+.dx-select-list[data-state="open"] {
+  animation: dx-select-in 120ms ease-out;
+}
+
+.dx-select[data-placement="top"] .dx-select-list {
+  top: auto;
+  bottom: calc(100% + .25rem);
+  transform-origin: bottom;
+}
+
+@keyframes dx-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-.25rem) scale(.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 选项以浅色状态反馈取代系统原生高亮 */
+.dx-select-option {
+  display: flex;
+  min-height: 2rem;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  border-radius: .25rem;
+  padding: .375rem .625rem;
+  color: var(--foreground);
+  cursor: pointer;
+  font-size: .8125rem;
+  line-height: 1.25rem;
+  outline: none;
+  user-select: none;
+}
+
+.dx-select-option > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dx-select-option:hover:not([data-disabled="true"]),
+.dx-select-option:focus,
+.dx-select-option[data-active="true"] {
+  background: var(--secondary-color-2);
+  color: var(--primary-color);
+}
+
+.dx-select-option[aria-selected="true"] {
+  background: color-mix(in srgb, var(--muted) 72%, var(--background));
+  font-weight: 600;
+}
+
+.dx-select-check-icon {
+  flex: 0 0 auto;
+  color: currentcolor;
+}
+
+.dx-select-option[data-disabled="true"] {
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+  opacity: .5;
+  pointer-events: none;
+}
+
+.dx-select-group-label {
+  padding: .375rem .625rem .25rem;
+  color: var(--muted-foreground);
+  font-size: .6875rem;
+  font-weight: 650;
+}

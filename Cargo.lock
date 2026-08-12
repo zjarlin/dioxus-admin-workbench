@@ -155,7 +155,7 @@ dependencies = [
 
 [[package]]
 name = "az-dioxus-admin-extension-crud"
-version = "2026.8.13"
+version = "2026.8.17"
 dependencies = [
  "anyhow",
  "az-admin-shell-core",
@@ -170,7 +170,7 @@ dependencies = [
 
 [[package]]
 name = "az-dioxus-admin-shell"
-version = "2026.8.13"
+version = "2026.8.17"
 dependencies = [
  "anyhow",
  "az-admin-shell-core",
@@ -185,7 +185,7 @@ dependencies = [
 
 [[package]]
 name = "az-ui-components"
-version = "2026.8.13"
+version = "2026.8.17"
 dependencies = [
  "dioxus",
  "dioxus-icons",
