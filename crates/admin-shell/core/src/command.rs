@@ -9,6 +9,9 @@ use crate::{
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "command", rename_all = "snake_case")]
 pub enum AdminCommand {
+    SetApplicationTitle {
+        title: String,
+    },
     AddScene {
         scene: SceneDefinition,
     },
@@ -47,6 +50,7 @@ pub enum AdminCommand {
 impl AdminDefinition {
     pub fn apply(&mut self, command: AdminCommand) -> Result<()> {
         match command {
+            AdminCommand::SetApplicationTitle { title } => self.set_application_title(title),
             AdminCommand::AddScene { scene } => self.add_scene(scene),
             AdminCommand::AddMenu {
                 scene_id,
@@ -80,6 +84,13 @@ impl AdminDefinition {
             AdminCommand::DeleteMenu { scene_id, menu_id } => self.delete_menu(&scene_id, &menu_id),
             AdminCommand::DeletePage { page_id } => self.delete_page(&page_id),
         }
+    }
+
+    fn set_application_title(&mut self, title: String) -> Result<()> {
+        let title = title.trim();
+        ensure!(!title.is_empty(), "应用标题不能为空");
+        self.title = title.to_owned();
+        Ok(())
     }
 
     fn add_scene(&mut self, scene: SceneDefinition) -> Result<()> {
@@ -261,6 +272,23 @@ mod tests {
 
         definition.apply(AdminCommand::DeletePage { page_id })?;
         assert!(definition.scenes[0].menus[0].page_id.is_none());
+        Ok(())
+    }
+
+    #[test]
+    fn application_title_must_not_be_empty() -> Result<()> {
+        let mut definition = definition();
+
+        definition.apply(AdminCommand::SetApplicationTitle {
+            title: "新的应用名称".to_owned(),
+        })?;
+        assert_eq!(definition.title, "新的应用名称");
+
+        let result = definition.apply(AdminCommand::SetApplicationTitle {
+            title: "  ".to_owned(),
+        });
+        assert!(result.is_err());
+        assert_eq!(definition.title, "新的应用名称");
         Ok(())
     }
 }

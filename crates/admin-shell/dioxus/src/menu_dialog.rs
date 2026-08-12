@@ -8,6 +8,7 @@ use az_ui_components::{
     button::{Button, ButtonVariant},
     dialog::{Dialog, DialogDescription, DialogTitle},
     input::Input,
+    navigation_icon::{DEFAULT_NAVIGATION_ICON, NavigationIconPicker},
 };
 use dioxus::prelude::*;
 use serde_json::Value;
@@ -27,6 +28,7 @@ pub(crate) fn MenuDialog(
 ) -> Element {
     let mut name = use_signal(String::new);
     let mut title = use_signal(String::new);
+    let mut icon = use_signal(|| DEFAULT_NAVIGATION_ICON.to_owned());
     let mut renderer = use_signal(|| "convention".to_owned());
     let mut config = use_signal(|| Value::Object(Default::default()));
     let mut pending = use_signal(|| false);
@@ -72,7 +74,7 @@ pub(crate) fn MenuDialog(
                             id: DefinitionId::new(),
                             name: page_name.clone(),
                             title: page_title.clone(),
-                            icon: None,
+                            icon: Some(icon()),
                             page_id: Some(page_id.clone()),
                             enabled: true,
                             children: Vec::new(),
@@ -128,6 +130,13 @@ pub(crate) fn MenuDialog(
                     name: "title",
                     value: "{title}",
                     oninput: move |event: FormEvent| title.set(event.value()),
+                }
+                label { "菜单图标" }
+                NavigationIconPicker {
+                    name: "icon",
+                    value: icon,
+                    aria_label: "菜单图标",
+                    on_value_change: move |value| icon.set(value),
                 }
                 label { r#for: "page-renderer", "页面来源" }
                 select {

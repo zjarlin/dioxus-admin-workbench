@@ -1,6 +1,7 @@
 #![doc = include_str!("../README.md")]
 #![forbid(unsafe_code)]
 
+mod application_dialog;
 mod extension;
 mod menu_dialog;
 mod navigation;

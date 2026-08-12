@@ -3,10 +3,11 @@ use std::sync::Arc;
 use az_admin_shell_core::{DefinitionId, PageExtensionCompilerIndex};
 use az_ui_components::button::{Button, ButtonSize, ButtonVariant};
 use dioxus::prelude::*;
-use icons::{PanelLeft, Plus};
+use icons::{PanelLeft, Pencil, Plus};
 
 use crate::{
     AdminProviderHandle, ConventionPageIndex, PageExtensionRendererIndex,
+    application_dialog::ApplicationDialog,
     menu_dialog::MenuDialog,
     navigation::{first_page, menu_items},
     provider::resolve_admin_provider,
@@ -81,6 +82,7 @@ pub fn AdminShell(
     let mut selected_scene = use_signal(|| None::<DefinitionId>);
     let mut selected_page = use_signal(|| None::<DefinitionId>);
     let mut sidebar_collapsed = use_signal(|| false);
+    let mut application_dialog_open = use_signal(|| false);
     let mut scene_dialog_open = use_signal(|| false);
     let mut menu_dialog_open = use_signal(|| false);
     let mut status = use_signal(|| None::<String>);
@@ -155,7 +157,16 @@ pub fn AdminShell(
                         onclick: move |_| sidebar_collapsed.toggle(),
                         PanelLeft { class: "size-4" }
                     }
-                    strong { class: BRAND_CLASS, "{snapshot.definition.title}" }
+                    Button {
+                        class: BRAND_CLASS,
+                        r#type: "button",
+                        variant: ButtonVariant::Ghost,
+                        title: "编辑应用标题",
+                        aria_label: "编辑应用标题",
+                        onclick: move |_| application_dialog_open.set(true),
+                        strong { "{snapshot.definition.title}" }
+                        Pencil { class: "size-3 admin-shell__brand-edit" }
+                    }
                 }
                 nav { class: MENU_CLASS, aria_label: "页面菜单",
                     if let Some(scene) = active_scene {
@@ -223,6 +234,15 @@ pub fn AdminShell(
                     div { class: STATUS_CLASS, role: "status", "{message}" }
                 }
                 section { class: CONTENT_CLASS, {content} }
+            }
+            if application_dialog_open() {
+                ApplicationDialog {
+                    admin: admin.clone(),
+                    current_title: snapshot.definition.title.clone(),
+                    open: application_dialog_open,
+                    generation,
+                    on_status: Callback::new(move |message| status.set(Some(message))),
+                }
             }
             if scene_dialog_open() {
                 SceneDialog {

@@ -71,6 +71,73 @@
   white-space: nowrap;
 }
 
+.admin-shell__brand.dx-button {
+  min-width: 0;
+  flex: 1;
+  justify-content: flex-start;
+  padding-inline: .5rem;
+}
+
+.admin-shell__brand strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-shell__brand-edit {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.admin-shell__brand:hover .admin-shell__brand-edit,
+.admin-shell__brand:focus-visible .admin-shell__brand-edit {
+  opacity: 1;
+}
+
+.admin-shell__application-dialog {
+  width: min(28rem, calc(100vw - 2rem));
+}
+
+.admin-shell__application-dialog form {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-shell__application-dialog header,
+.admin-shell__application-dialog footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+
+.admin-shell__application-dialog header {
+  align-items: flex-start;
+}
+
+.admin-shell__application-dialog header h2,
+.admin-shell__application-dialog header p {
+  margin: 0;
+}
+
+.admin-shell__application-dialog header p {
+  margin-top: .25rem;
+  color: var(--muted-foreground);
+  font-size: .8125rem;
+}
+
+.admin-shell__application-dialog label {
+  display: grid;
+  gap: .375rem;
+  font-size: .8125rem;
+  font-weight: 600;
+}
+
+.admin-shell__application-dialog footer {
+  justify-content: flex-end;
+}
+
 .admin-shell[data-sidebar-collapsed="true"] .admin-shell__brand,
 .admin-shell[data-sidebar-collapsed="true"] .admin-shell__action-label,
 .admin-shell[data-sidebar-collapsed="true"] .admin-shell__menu-row span:last-child {

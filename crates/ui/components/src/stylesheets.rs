@@ -11,6 +11,8 @@ const COLLECTION_TREE_STYLESHEET: Asset =
 const DATA_TABLE_STYLESHEET: Asset = asset!("/src/data_table/style.css", AssetOptions::css());
 const DIALOG_STYLESHEET: Asset = asset!("/src/dialog/style.css", AssetOptions::css());
 const INPUT_STYLESHEET: Asset = asset!("/src/input/style.css", AssetOptions::css());
+const NAVIGATION_ICON_STYLESHEET: Asset =
+    asset!("/src/navigation_icon/style.css", AssetOptions::css());
 const SELECT_STYLESHEET: Asset = asset!("/src/select/style.css", AssetOptions::css());
 const SPATIAL_STYLESHEET: Asset = asset!("/src/spatial/style.css", AssetOptions::css());
 const TEXTAREA_STYLESHEET: Asset = asset!("/src/textarea/style.css", AssetOptions::css());
@@ -29,6 +31,7 @@ pub fn UiStylesheets() -> Element {
         document::Stylesheet { href: DATA_TABLE_STYLESHEET }
         document::Stylesheet { href: DIALOG_STYLESHEET }
         document::Stylesheet { href: INPUT_STYLESHEET }
+        document::Stylesheet { href: NAVIGATION_ICON_STYLESHEET }
         document::Stylesheet { href: SELECT_STYLESHEET }
         document::Stylesheet { href: SPATIAL_STYLESHEET }
         document::Stylesheet { href: TEXTAREA_STYLESHEET }
@@ -50,6 +53,10 @@ mod tests {
             (include_str!("data_table/style.css"), ".data-table-root"),
             (include_str!("dialog/style.css"), ".dx-dialog"),
             (include_str!("input/style.css"), ".dx-input"),
+            (
+                include_str!("navigation_icon/style.css"),
+                ".dx-navigation-icon-picker",
+            ),
             (include_str!("select/style.css"), ".dx-select"),
             (include_str!("spatial/style.css"), ".dx-graph-canvas"),
             (include_str!("textarea/style.css"), ".dx-textarea"),
