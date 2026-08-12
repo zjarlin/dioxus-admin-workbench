@@ -151,6 +151,7 @@
 
 .dx-select-option[aria-selected="true"] {
   background: color-mix(in srgb, var(--muted) 72%, var(--background));
+  color: var(--foreground);
   font-weight: 600;
 }
 
