@@ -4,6 +4,7 @@
 mod attributes;
 mod stylesheets;
 
+pub mod agent_chat;
 pub mod badge;
 pub mod button;
 pub mod checkbox;

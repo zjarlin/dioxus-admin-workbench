@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 
+const AGENT_CHAT_STYLESHEET: Asset = asset!("/src/agent_chat/style.css", AssetOptions::css());
 const UTILITIES_STYLESHEET: Asset = asset!("/src/utilities.css", AssetOptions::css());
 const THEME_STYLESHEET: Asset = asset!("/src/theme.css", AssetOptions::css());
 const WORKBENCH_STYLESHEET: Asset = asset!("/src/workbench.css", AssetOptions::css());
@@ -21,6 +22,7 @@ const TEXTAREA_STYLESHEET: Asset = asset!("/src/textarea/style.css", AssetOption
 #[component]
 pub fn UiStylesheets() -> Element {
     rsx! {
+        document::Stylesheet { href: AGENT_CHAT_STYLESHEET }
         document::Stylesheet { href: UTILITIES_STYLESHEET }
         document::Stylesheet { href: THEME_STYLESHEET }
         document::Stylesheet { href: WORKBENCH_STYLESHEET }
@@ -43,6 +45,7 @@ mod tests {
     #[test]
     fn stylesheets_keep_stable_component_classes() {
         let stylesheets = [
+            (include_str!("agent_chat/style.css"), ".dx-agent-chat"),
             (include_str!("badge/style.css"), ".dx-badge"),
             (include_str!("button/style.css"), ".dx-button"),
             (include_str!("checkbox/style.css"), ".dx-checkbox"),
