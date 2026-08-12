@@ -3705,7 +3705,8 @@ body {
   color: var(--foreground);
 }
 
-.aio-function-workspace__tabs > button.dx-button.is-active {
+.aio-function-workspace__tabs > button.dx-button.is-active,
+.aio-function-workspace__tabs > button.dx-button.is-active:not(:disabled):hover {
   border-bottom-color: var(--primary);
   background: var(--primary);
   color: var(--primary-foreground);
@@ -5480,7 +5481,8 @@ div.aio-endpoint-confirm-dialog {
   color: var(--foreground);
 }
 
-.aio-model-grid__tabs > button.dx-button.is-active {
+.aio-model-grid__tabs > button.dx-button.is-active,
+.aio-model-grid__tabs > button.dx-button.is-active:not(:disabled):hover {
   border-bottom-color: var(--primary);
   background: var(--primary);
   color: var(--primary-foreground);
