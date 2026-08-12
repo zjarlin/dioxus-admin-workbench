@@ -227,7 +227,7 @@
   }
 
   .admin-shell__brand,
-  .admin-shell__brand-edit-button,
+  .admin-shell__sidebar-header .admin-shell__brand-edit-button,
   .admin-shell__action-label,
   .admin-shell__menu-row span:last-child {
     display: none;
