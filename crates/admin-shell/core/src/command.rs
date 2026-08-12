@@ -73,6 +73,11 @@ impl AdminDefinition {
                     "页面 ID 已存在: {}",
                     page.id
                 );
+                ensure!(
+                    self.pages.iter().all(|existing| existing.name != page.name),
+                    "页面标识已存在: {}",
+                    page.name
+                );
                 self.add_menu(&scene_id, parent_menu_id.as_ref(), menu)?;
                 self.pages.push(page);
                 Ok(())
@@ -99,6 +104,13 @@ impl AdminDefinition {
             "场景 ID 已存在: {}",
             scene.id
         );
+        ensure!(
+            self.scenes
+                .iter()
+                .all(|existing| existing.name != scene.name),
+            "场景标识已存在: {}",
+            scene.name
+        );
         self.scenes.push(scene);
         Ok(())
     }
@@ -119,6 +131,11 @@ impl AdminDefinition {
             "菜单 ID 已存在: {}",
             menu.id
         );
+        ensure!(
+            !menu_name_exists(&scene.menus, &menu.name),
+            "菜单标识已存在: {}",
+            menu.name
+        );
         if let Some(parent_menu_id) = parent_menu_id {
             let Some(parent) = find_menu_mut(&mut scene.menus, parent_menu_id) else {
                 bail!("父菜单不存在: {parent_menu_id}");
@@ -135,6 +152,11 @@ impl AdminDefinition {
             self.pages.iter().all(|existing| existing.id != page.id),
             "页面 ID 已存在: {}",
             page.id
+        );
+        ensure!(
+            self.pages.iter().all(|existing| existing.name != page.name),
+            "页面标识已存在: {}",
+            page.name
         );
         self.pages.push(page);
         Ok(())
@@ -189,6 +211,12 @@ fn menu_exists(menus: &[MenuDefinition], id: &DefinitionId) -> bool {
     menus
         .iter()
         .any(|menu| &menu.id == id || menu_exists(&menu.children, id))
+}
+
+fn menu_name_exists(menus: &[MenuDefinition], name: &str) -> bool {
+    menus
+        .iter()
+        .any(|menu| menu.name == name || menu_name_exists(&menu.children, name))
 }
 
 fn find_menu_mut<'a>(
@@ -289,6 +317,73 @@ mod tests {
         });
         assert!(result.is_err());
         assert_eq!(definition.title, "新的应用名称");
+        Ok(())
+    }
+
+    #[test]
+    fn generated_names_must_be_unique_before_mutation() -> Result<()> {
+        let scene_id = DefinitionId::new();
+        let mut definition = definition();
+        definition.apply(AdminCommand::AddScene {
+            scene: SceneDefinition {
+                id: scene_id.clone(),
+                name: "zi_chan".to_owned(),
+                title: "资产".to_owned(),
+                menus: Vec::new(),
+            },
+        })?;
+        let duplicate_scene = definition.apply(AdminCommand::AddScene {
+            scene: SceneDefinition {
+                id: DefinitionId::new(),
+                name: "zi_chan".to_owned(),
+                title: "资产".to_owned(),
+                menus: Vec::new(),
+            },
+        });
+        assert!(duplicate_scene.is_err());
+
+        let page_id = DefinitionId::new();
+        definition.apply(AdminCommand::AddMenuPage {
+            scene_id: scene_id.clone(),
+            parent_menu_id: None,
+            menu: MenuDefinition {
+                id: DefinitionId::new(),
+                name: "she_bei".to_owned(),
+                title: "设备".to_owned(),
+                icon: None,
+                page_id: Some(page_id.clone()),
+                enabled: true,
+                children: Vec::new(),
+            },
+            page: PageDefinition {
+                id: page_id,
+                name: "she_bei".to_owned(),
+                title: "设备".to_owned(),
+                renderer: PageRendererDefinition::ConventionFile,
+            },
+        })?;
+        let duplicate_page_id = DefinitionId::new();
+        let duplicate_page = definition.apply(AdminCommand::AddMenuPage {
+            scene_id,
+            parent_menu_id: None,
+            menu: MenuDefinition {
+                id: DefinitionId::new(),
+                name: "ling_yi_ge_cai_dan".to_owned(),
+                title: "另一个菜单".to_owned(),
+                icon: None,
+                page_id: Some(duplicate_page_id.clone()),
+                enabled: true,
+                children: Vec::new(),
+            },
+            page: PageDefinition {
+                id: duplicate_page_id,
+                name: "she_bei".to_owned(),
+                title: "设备".to_owned(),
+                renderer: PageRendererDefinition::ConventionFile,
+            },
+        });
+        assert!(duplicate_page.is_err());
+        assert_eq!(definition.scenes[0].menus.len(), 1);
         Ok(())
     }
 }
