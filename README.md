@@ -13,12 +13,17 @@ Dioxus Admin Workbench 是一个由正式定义和编译期 Provider 驱动的�
 
 ## Install
 
+应用开发阶段建议固定同一仓库提交，保证 core、shell、CRUD 和组件来自同一源码图，同时避免每次样式调整都发布 crates.io：
+
 ```toml
 [dependencies]
-az-admin-shell-core = "2026.8.13"
-az-dioxus-admin-shell = "2026.8.17"
-az-dioxus-admin-extension-crud = "2026.8.17"
+az-admin-shell-core = { version = "=2026.8.13", git = "https://github.com/zjarlin/dioxus-admin-workbench.git", rev = "<commit>" }
+az-dioxus-admin-shell = { version = "=2026.8.17", git = "https://github.com/zjarlin/dioxus-admin-workbench.git", rev = "<commit>" }
+az-dioxus-admin-extension-crud = { version = "=2026.8.17", git = "https://github.com/zjarlin/dioxus-admin-workbench.git", rev = "<commit>" }
+az-ui-components = { version = "=2026.8.17", git = "https://github.com/zjarlin/dioxus-admin-workbench.git", rev = "<commit>" }
 ```
+
+四项依赖必须使用同一个完整提交哈希。正式里程碑仍可改为 crates.io 精确版本。
 
 ## Register the application provider
 

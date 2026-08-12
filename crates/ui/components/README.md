@@ -13,8 +13,10 @@
 
 ```toml
 [dependencies]
-az-ui-components = "2026.8.17"
+az-ui-components = { version = "=2026.8.17", git = "https://github.com/zjarlin/dioxus-admin-workbench.git", rev = "<commit>" }
 ```
+
+开发集成固定 Git `rev`，视觉调整不要求立即发布 crates.io；正式里程碑再切换为精确 registry 版本。
 
 `az-dioxus-admin-shell` 会自动加载组件主题、布局、工具类和控件样式。直接使用本 crate 时，
 在应用根节点渲染一次 `UiStylesheets`；全部样式资产随 crate 发布，消费方不保存、复制或注入 CSS。
