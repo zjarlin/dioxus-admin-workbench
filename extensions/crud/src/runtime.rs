@@ -8,6 +8,7 @@ use az_ui_components::{
     data_table::{DataTable, DataTableCellContext, DataTableColumn, DataTableFixed},
     dialog::{Dialog, DialogDescription, DialogTitle},
     input::Input,
+    select::{Select, SelectItem},
 };
 use dioxus::prelude::*;
 use icons::{ChevronLeft, ChevronRight, Pencil, Plus, Trash2};
@@ -337,13 +338,13 @@ fn field_editor(field: &ResourceFieldDefinition, record: Option<&ResourceRecord>
         .unwrap_or_default();
     if field.kind == ResourceFieldKind::Boolean {
         return rsx! {
-            label { r#for: "field-{field.name}", "{field.title}" }
-            select {
+            label { "{field.title}" }
+            Select {
                 id: "field-{field.name}",
                 name: "{field.name}",
-                required: field.required,
-                option { value: "false", selected: value == "false", "否" }
-                option { value: "true", selected: value == "true", "是" }
+                aria_label: field.title.clone(),
+                value,
+                options: vec![SelectItem::new("false", "否"), SelectItem::new("true", "是")],
             }
         };
     }

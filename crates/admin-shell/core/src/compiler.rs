@@ -1,7 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
 
-use convert_case::{Case, Casing};
-use deunicode::deunicode;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -219,8 +217,8 @@ fn diagnostic(code: &str, message: String, target_id: &DefinitionId) -> Diagnost
 pub fn convention_page_module_name(program_name: &str, page_name: &str) -> String {
     format!(
         "{}__{}",
-        identifier(program_name, "program"),
-        identifier(page_name, "page")
+        generated_identifier_or(program_name, "program"),
+        generated_identifier_or(page_name, "page")
     )
 }
 
@@ -232,20 +230,13 @@ pub fn convention_page_path(program_name: &str, page_name: &str) -> String {
     )
 }
 
-fn identifier(value: &str, fallback: &str) -> String {
-    let normalized = deunicode(value).to_case(Case::Snake);
-    let normalized = normalized
-        .chars()
-        .filter(|character| character.is_ascii_alphanumeric() || *character == '_')
-        .collect::<String>();
-    let normalized = normalized.trim_matches('_');
-    if normalized.is_empty() {
-        return fallback.to_owned();
+fn generated_identifier_or(value: &str, fallback: &str) -> String {
+    let identifier = crate::identifier_from_title(value);
+    if identifier.is_empty() {
+        fallback.to_owned()
+    } else {
+        identifier
     }
-    if normalized.starts_with(|character: char| character.is_ascii_digit()) {
-        return format!("_{normalized}");
-    }
-    normalized.to_owned()
 }
 
 #[cfg(test)]

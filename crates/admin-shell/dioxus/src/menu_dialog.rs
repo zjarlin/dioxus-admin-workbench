@@ -2,13 +2,14 @@ use std::sync::Arc;
 
 use az_admin_shell_core::{
     AdminCommand, DefinitionId, ExtensionType, MenuDefinition, PageDefinition,
-    PageExtensionCompilerIndex, PageRendererDefinition, ResourceCatalog,
+    PageExtensionCompilerIndex, PageRendererDefinition, ResourceCatalog, identifier_from_title,
 };
 use az_ui_components::{
     button::{Button, ButtonVariant},
     dialog::{Dialog, DialogDescription, DialogTitle},
     input::Input,
     navigation_icon::{DEFAULT_NAVIGATION_ICON, NavigationIconPicker},
+    select::{Select, SelectItem},
 };
 use dioxus::prelude::*;
 use serde_json::Value;
@@ -26,7 +27,6 @@ pub(crate) fn MenuDialog(
     mut generation: Signal<u64>,
     on_status: Callback<String>,
 ) -> Element {
-    let mut name = use_signal(String::new);
     let mut title = use_signal(String::new);
     let mut icon = use_signal(|| DEFAULT_NAVIGATION_ICON.to_owned());
     let mut renderer = use_signal(|| "convention".to_owned());
@@ -37,6 +37,14 @@ pub(crate) fn MenuDialog(
     let selected_extension = ExtensionType::from_provider_key(renderer());
     let submit_extensions = compiler_extensions.clone();
     let select_extensions = compiler_extensions.clone();
+    let renderer_options = std::iter::once(SelectItem::new("convention", "约定文件"))
+        .chain(descriptors.iter().map(|descriptor| {
+            SelectItem::new(
+                descriptor.extension_type.to_string(),
+                descriptor.title.to_owned(),
+            )
+        }))
+        .collect::<Vec<_>>();
 
     rsx! {
         Dialog {
@@ -45,10 +53,14 @@ pub(crate) fn MenuDialog(
             form {
                 onsubmit: move |event| {
                     event.prevent_default();
-                    let page_name = name().trim().to_owned();
                     let page_title = title().trim().to_owned();
-                    if page_name.is_empty() || page_title.is_empty() {
-                        error.set(Some("菜单标识和标题不能为空".to_owned()));
+                    if page_title.is_empty() {
+                        error.set(Some("菜单标题不能为空".to_owned()));
+                        return;
+                    }
+                    let page_name = identifier_from_title(&page_title);
+                    if page_name.is_empty() {
+                        error.set(Some("菜单标题无法生成有效标识，请包含中文、字母或数字".to_owned()));
                         return;
                     }
                     let page_id = DefinitionId::new();
@@ -117,13 +129,6 @@ pub(crate) fn MenuDialog(
                     DialogTitle { "新建菜单页面" }
                     DialogDescription { "选择消费方约定文件，或由已注册扩展提供页面能力。" }
                 }
-                label { r#for: "menu-name", "菜单标识" }
-                Input {
-                    id: "menu-name",
-                    name: "name",
-                    value: "{name}",
-                    oninput: move |event: FormEvent| name.set(event.value()),
-                }
                 label { r#for: "menu-title", "菜单标题" }
                 Input {
                     id: "menu-title",
@@ -138,13 +143,14 @@ pub(crate) fn MenuDialog(
                     aria_label: "菜单图标",
                     on_value_change: move |value| icon.set(value),
                 }
-                label { r#for: "page-renderer", "页面来源" }
-                select {
+                label { "页面来源" }
+                Select {
                     id: "page-renderer",
                     name: "renderer",
-                    value: "{renderer}",
-                    onchange: move |event: FormEvent| {
-                        let next = event.value();
+                    aria_label: "页面来源",
+                    value: renderer,
+                    options: renderer_options,
+                    on_value_change: move |next: String| {
                         if next == "convention" {
                             config.set(Value::Object(Default::default()));
                         } else {
@@ -155,13 +161,6 @@ pub(crate) fn MenuDialog(
                         }
                         renderer.set(next);
                     },
-                    option { value: "convention", "约定文件" }
-                    for descriptor in &descriptors {
-                        option {
-                            value: "{descriptor.extension_type}",
-                            "{descriptor.title}"
-                        }
-                    }
                 }
                 if renderer() != "convention" {
                     if let Some(extension) = renderer_extensions.get(&selected_extension) {

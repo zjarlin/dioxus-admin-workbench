@@ -1,5 +1,8 @@
 use az_dioxus_admin_shell::PageExtensionEditorContext;
-use az_ui_components::input::Input;
+use az_ui_components::{
+    input::Input,
+    select::{Select, SelectItem},
+};
 use dioxus::prelude::*;
 
 use crate::CrudPageConfig;
@@ -8,20 +11,30 @@ use crate::CrudPageConfig;
 pub(crate) fn CrudEditor(context: PageExtensionEditorContext) -> Element {
     let config =
         serde_json::from_value::<CrudPageConfig>(context.config.clone()).unwrap_or_default();
+    let resource_options = std::iter::once(SelectItem::new("", "选择资源"))
+        .chain(context.resources.resources.values().map(|resource| {
+            SelectItem::new(
+                resource.id.clone(),
+                format!("{} · {}", resource.title, resource.name),
+            )
+        }))
+        .collect::<Vec<_>>();
     rsx! {
         fieldset {
             legend { "资源增删改查配置" }
-            label { r#for: "crud-resource", "资源" }
-            select {
+            label { "资源" }
+            Select {
                 id: "crud-resource",
                 name: "resource_id",
-                value: "{config.resource_id}",
-                onchange: {
+                aria_label: "资源",
+                value: config.resource_id.clone(),
+                options: resource_options,
+                on_value_change: {
                     let on_change = context.on_change;
                     let page_size = config.page_size;
-                    move |event: FormEvent| {
+                    move |resource_id: String| {
                         let next = CrudPageConfig {
-                            resource_id: event.value(),
+                            resource_id,
                             page_size,
                         };
                         on_change.call(serde_json::json!({
@@ -30,14 +43,6 @@ pub(crate) fn CrudEditor(context: PageExtensionEditorContext) -> Element {
                         }));
                     }
                 },
-                option { value: "", "选择资源" }
-                for resource in context.resources.resources.values() {
-                    option {
-                        value: "{resource.id}",
-                        selected: config.resource_id == resource.id,
-                        "{resource.title} · {resource.name}"
-                    }
-                }
             }
             label { r#for: "crud-page-size", "每页条数" }
             Input {

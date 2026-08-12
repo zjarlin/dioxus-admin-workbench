@@ -17,6 +17,7 @@ workspace = "../../.."
 anyhow.workspace = true
 convert_case.workspace = true
 deunicode.workspace = true
+pinyin.workspace = true
 rudi.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -24,4 +25,3 @@ uuid.workspace = true
 
 [lints]
 workspace = true
-
