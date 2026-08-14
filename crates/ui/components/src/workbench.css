@@ -3182,10 +3182,15 @@ body {
 
 .application-shell__brand {
   min-width: 0;
+  flex: 1 1 auto;
   overflow: hidden;
   font-size: .875rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.application-shell__brand-edit {
+  flex: 0 0 auto;
 }
 
 .application-shell__navigation-panel {
@@ -3426,8 +3431,21 @@ body {
   scrollbar-width: thin;
 }
 
-.application-shell__scenes > button {
+.application-shell__scene-item {
+  display: inline-flex;
   flex: 0 0 auto;
+  align-items: center;
+  gap: .125rem;
+}
+
+.dx-button.application-shell__scene-delete {
+  flex: 0 0 auto;
+  color: var(--muted-foreground);
+}
+
+.dx-button.application-shell__scene-delete:hover,
+.dx-button.application-shell__scene-delete:focus-visible {
+  color: var(--destructive);
 }
 
 .application-shell__page-heading h1,
@@ -3472,6 +3490,7 @@ body {
 }
 
 .application-shell[data-sidebar-collapsed="true"] .application-shell__brand,
+.application-shell[data-sidebar-collapsed="true"] .application-shell__brand-edit,
 .application-shell[data-sidebar-collapsed="true"] .application-shell__navigation-label,
 .application-shell[data-sidebar-collapsed="true"] .application-shell__sidebar-label,
 .application-shell[data-sidebar-collapsed="true"] .application-shell__account-label,

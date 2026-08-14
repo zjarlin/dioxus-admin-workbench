@@ -5,7 +5,7 @@ use az_ui_components::{
     dialog::{Dialog, DialogTitle},
 };
 use dioxus::prelude::*;
-use icons::{PanelLeft, Plus, Settings, X};
+use icons::{PanelLeft, Pencil, Plus, Settings, Trash2, X};
 
 use crate::{
     ApplicationAccountAction, ApplicationMenuItem, ApplicationSceneItem, ApplicationUser,
@@ -25,7 +25,9 @@ pub fn ApplicationShell(
     on_select_page: Callback<String>,
     on_account_action: Callback<ApplicationAccountAction>,
     #[props(default)] status: Option<String>,
+    #[props(default)] on_edit_application: Option<Callback<()>>,
     #[props(default)] on_create_scene: Option<Callback<()>>,
+    #[props(default)] on_delete_scene: Option<Callback<String>>,
     #[props(default)] on_create_menu: Option<Callback<()>>,
     #[props(default)] on_configure_page: Option<Callback<()>>,
     children: Element,
@@ -62,6 +64,18 @@ pub fn ApplicationShell(
                         PanelLeft { class: "size-5" }
                     }
                     strong { class: "application-shell__brand", "{application_label}" }
+                    if let Some(edit_application) = on_edit_application {
+                        Button {
+                            class: "application-shell__brand-edit",
+                            r#type: "button",
+                            size: ButtonSize::IconXs,
+                            variant: ButtonVariant::Ghost,
+                            title: "编辑应用标题",
+                            aria_label: "编辑应用标题",
+                            onclick: move |_| edit_application.call(()),
+                            Pencil { class: "size-3" }
+                        }
+                    }
                 }
                 ApplicationNavigationPanel {
                     menus: menus.clone(),
@@ -90,17 +104,12 @@ pub fn ApplicationShell(
                     }
                     nav { class: "application-shell__scenes", aria_label: "场景",
                         for scene in scenes {
-                            Button {
+                            ApplicationSceneTab {
                                 key: "{scene.id}",
-                                r#type: "button",
-                                size: ButtonSize::Sm,
-                                variant: if active_scene_id.as_deref() == Some(scene.id.as_str()) {
-                                    ButtonVariant::Secondary
-                                } else {
-                                    ButtonVariant::Ghost
-                                },
-                                onclick: move |_| on_select_scene.call(scene.id.clone()),
-                                "{scene.label}"
+                                active: active_scene_id.as_deref() == Some(scene.id.as_str()),
+                                scene,
+                                on_select: on_select_scene,
+                                on_delete: on_delete_scene,
                             }
                         }
                         if let Some(create_scene) = on_create_scene {
@@ -144,6 +153,17 @@ pub fn ApplicationShell(
                     div { class: "application-shell__mobile-title",
                         PanelLeft { class: "size-5" }
                         DialogTitle { "{application_label}" }
+                        if let Some(edit_application) = on_edit_application {
+                            Button {
+                                r#type: "button",
+                                size: ButtonSize::IconXs,
+                                variant: ButtonVariant::Ghost,
+                                title: "编辑应用标题",
+                                aria_label: "编辑应用标题",
+                                onclick: move |_| edit_application.call(()),
+                                Pencil { class: "size-3" }
+                            }
+                        }
                     }
                     Button {
                         r#type: "button",
@@ -163,6 +183,46 @@ pub fn ApplicationShell(
                     on_select_page: shell_select_page,
                     on_account_action: shell_account_action,
                     on_create_menu,
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn ApplicationSceneTab(
+    scene: ApplicationSceneItem,
+    active: bool,
+    on_select: Callback<String>,
+    on_delete: Option<Callback<String>>,
+) -> Element {
+    let select_scene_id = scene.id.clone();
+    let delete_scene_id = scene.id.clone();
+    let delete_label = format!("删除场景 {}", scene.label);
+    rsx! {
+        div { class: "application-shell__scene-item",
+            Button {
+                class: "application-shell__scene-select",
+                r#type: "button",
+                size: ButtonSize::Sm,
+                variant: if active {
+                    ButtonVariant::Secondary
+                } else {
+                    ButtonVariant::Ghost
+                },
+                onclick: move |_| on_select.call(select_scene_id.clone()),
+                "{scene.label}"
+            }
+            if let Some(delete_scene) = on_delete {
+                Button {
+                    class: "application-shell__scene-delete",
+                    r#type: "button",
+                    size: ButtonSize::IconXs,
+                    variant: ButtonVariant::Ghost,
+                    title: "{delete_label}",
+                    aria_label: "{delete_label}",
+                    onclick: move |_| delete_scene.call(delete_scene_id.clone()),
+                    Trash2 { class: "size-3" }
                 }
             }
         }
