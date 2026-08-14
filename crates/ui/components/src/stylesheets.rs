@@ -76,7 +76,10 @@ mod tests {
     #[test]
     fn published_stylesheets_own_theme_and_workbench_layout() {
         assert!(include_str!("theme.css").contains("--primary-color"));
-        assert!(include_str!("workbench.css").contains(".aio-studio-shell"));
+        let workbench = include_str!("workbench.css");
+        assert!(workbench.contains(".aio-studio-shell"));
+        assert!(workbench.contains(".application-shell__account-menu"));
+        assert!(workbench.contains("data-sidebar-collapsed"));
         assert!(include_str!("utilities.css").contains(".size-4"));
     }
 

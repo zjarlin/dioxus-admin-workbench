@@ -13,16 +13,27 @@ keywords = ["dioxus", "admin", "dashboard", "plugin", "workbench"]
 categories = ["gui", "wasm", "web-programming"]
 workspace = "../../.."
 
+[features]
+default = ["workbench"]
+workbench = [
+    "dep:anyhow",
+    "dep:az-admin-shell-core",
+    "dep:futures-util",
+    "dep:manganis",
+    "dep:rudi",
+    "dep:serde_json",
+]
+
 [dependencies]
-anyhow.workspace = true
-az-admin-shell-core.workspace = true
+anyhow = { workspace = true, optional = true }
+az-admin-shell-core = { workspace = true, optional = true }
 az-ui-components.workspace = true
 dioxus = { workspace = true, features = ["hooks", "document", "asset"] }
-futures-util.workspace = true
+futures-util = { workspace = true, optional = true }
 icons.workspace = true
-manganis.workspace = true
-rudi.workspace = true
-serde_json.workspace = true
+manganis = { workspace = true, optional = true }
+rudi = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
 
 [lints]
 workspace = true
