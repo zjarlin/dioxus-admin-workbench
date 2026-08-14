@@ -8,7 +8,7 @@ use dioxus::prelude::*;
 use icons::{PanelLeft, Plus, Settings, X};
 
 use crate::{
-    ApplicationAccountAction, ApplicationMenuItem, ApplicationUser,
+    ApplicationAccountAction, ApplicationMenuItem, ApplicationSceneItem, ApplicationUser,
     application_account::ApplicationAccountMenu, application_navigation::ApplicationNavigation,
 };
 
@@ -16,12 +16,16 @@ use crate::{
 pub fn ApplicationShell(
     application_label: String,
     page_label: String,
+    scenes: Vec<ApplicationSceneItem>,
+    active_scene_id: Option<String>,
     menus: Vec<ApplicationMenuItem>,
     active_page_id: Option<String>,
     user: ApplicationUser,
+    on_select_scene: Callback<String>,
     on_select_page: Callback<String>,
     on_account_action: Callback<ApplicationAccountAction>,
     #[props(default)] status: Option<String>,
+    #[props(default)] on_create_scene: Option<Callback<()>>,
     #[props(default)] on_create_menu: Option<Callback<()>>,
     #[props(default)] on_configure_page: Option<Callback<()>>,
     children: Element,
@@ -83,6 +87,33 @@ pub fn ApplicationShell(
                             PanelLeft { class: "size-4" }
                         }
                         h1 { "{page_label}" }
+                    }
+                    nav { class: "application-shell__scenes", aria_label: "场景",
+                        for scene in scenes {
+                            Button {
+                                key: "{scene.id}",
+                                r#type: "button",
+                                size: ButtonSize::Sm,
+                                variant: if active_scene_id.as_deref() == Some(scene.id.as_str()) {
+                                    ButtonVariant::Secondary
+                                } else {
+                                    ButtonVariant::Ghost
+                                },
+                                onclick: move |_| on_select_scene.call(scene.id.clone()),
+                                "{scene.label}"
+                            }
+                        }
+                        if let Some(create_scene) = on_create_scene {
+                            Button {
+                                r#type: "button",
+                                size: ButtonSize::IconSm,
+                                variant: ButtonVariant::Outline,
+                                title: "新建场景",
+                                aria_label: "新建场景",
+                                onclick: move |_| create_scene.call(()),
+                                Plus { class: "size-4" }
+                            }
+                        }
                     }
                     div { class: "application-shell__page-actions",
                         if let Some(message) = status {

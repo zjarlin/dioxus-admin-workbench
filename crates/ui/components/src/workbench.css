@@ -3404,12 +3404,30 @@ body {
 }
 
 .application-shell__page-heading,
+.application-shell__scenes,
 .application-shell__page-actions,
 .application-shell__mobile-title {
   display: flex;
   min-width: 0;
   align-items: center;
   gap: .5rem;
+}
+
+.application-shell__page-heading {
+  flex: 0 1 auto;
+}
+
+.application-shell__scenes {
+  min-width: 0;
+  flex: 1 1 auto;
+  justify-content: center;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.application-shell__scenes > button {
+  flex: 0 0 auto;
 }
 
 .application-shell__page-heading h1,
@@ -3494,6 +3512,19 @@ body {
 
   .dx-button.application-shell__mobile-trigger {
     display: inline-flex;
+  }
+
+  .application-shell__topbar {
+    gap: .375rem;
+    padding-inline: .75rem;
+  }
+
+  .application-shell__page-heading h1 {
+    max-width: 7rem;
+  }
+
+  .application-shell__scenes {
+    justify-content: flex-start;
   }
 
   .application-shell__content {

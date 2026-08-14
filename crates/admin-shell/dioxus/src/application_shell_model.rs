@@ -9,6 +9,12 @@ pub struct ApplicationMenuItem {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ApplicationSceneItem {
+    pub id: String,
+    pub label: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ApplicationUser {
     pub label: String,
     pub handle: String,
