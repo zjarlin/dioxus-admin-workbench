@@ -81,6 +81,14 @@ mod tests {
     }
 
     #[test]
+    fn runtime_record_form_keeps_shared_grid_layout() {
+        let workbench = include_str!("workbench.css");
+        assert!(workbench.contains(".aio-runtime-record-form__field"));
+        assert!(workbench.contains(".aio-runtime-record-form__field--wide"));
+        assert!(workbench.contains(".aio-runtime-record-form__body"));
+    }
+
+    #[test]
     fn select_keeps_form_submission_field() {
         let component = include_str!("select/component.rs");
         assert!(component.contains("r#type: \"hidden\""));

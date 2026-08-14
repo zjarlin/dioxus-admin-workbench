@@ -6353,8 +6353,8 @@ div.aio-runtime-dialog.aio-runtime-dialog--confirm {
 }
 
 div.aio-runtime-dialog.aio-runtime-dialog--record {
-  width: min(38rem, calc(100vw - 2rem));
-  max-width: 38rem;
+  width: min(60rem, calc(100vw - 2rem));
+  max-width: 60rem;
 }
 
 div.aio-runtime-dialog.aio-runtime-dialog--confirm {
@@ -6529,21 +6529,40 @@ div.aio-runtime-dialog.aio-runtime-dialog--endpoint {
 .aio-runtime-record-form__body {
   display: grid;
   min-height: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-content: start;
-  gap: .625rem;
+  gap: .875rem 1rem;
   overflow-y: auto;
   padding: 1rem;
 }
 
-.aio-runtime-record-form__body > label {
+.aio-runtime-record-form__field {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: .5rem;
+}
+
+.aio-runtime-record-form__field--wide,
+.aio-runtime-ai-fill {
+  grid-column: 1 / -1;
+}
+
+.aio-runtime-record-form__field > label {
   font-size: .8125rem;
   font-weight: 600;
 }
 
-.aio-runtime-record-form__body > small {
-  margin-top: -.375rem;
+.aio-runtime-record-form__field > small {
+  margin-top: -.25rem;
   color: var(--muted-foreground);
   font-size: .75rem;
+}
+
+@media (max-width: 767px) {
+  .aio-runtime-record-form__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .aio-runtime-relation-select.is-multiple {
