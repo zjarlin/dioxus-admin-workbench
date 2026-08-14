@@ -160,7 +160,10 @@ pub fn ApplicationShell(
                                 variant: ButtonVariant::Ghost,
                                 title: "编辑应用标题",
                                 aria_label: "编辑应用标题",
-                                onclick: move |_| edit_application.call(()),
+                                onclick: move |_| {
+                                    mobile_navigation_open.set(false);
+                                    edit_application.call(());
+                                },
                                 Pencil { class: "size-3" }
                             }
                         }
