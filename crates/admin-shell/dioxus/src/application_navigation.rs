@@ -1,8 +1,9 @@
 use az_ui_components::{
-    button::{Button, ButtonVariant},
+    button::{Button, ButtonSize, ButtonVariant},
     navigation_icon::{NavigationIcon, resolved_navigation_icon},
 };
 use dioxus::prelude::*;
+use icons::Trash2;
 
 use crate::ApplicationMenuItem;
 
@@ -11,6 +12,7 @@ pub(crate) fn ApplicationNavigation(
     menus: Vec<ApplicationMenuItem>,
     active_page_id: Option<String>,
     on_select_page: Callback<String>,
+    on_delete_menu: Option<Callback<String>>,
 ) -> Element {
     rsx! {
         nav { class: "application-shell__navigation", aria_label: "应用页面",
@@ -21,6 +23,7 @@ pub(crate) fn ApplicationNavigation(
                     depth: 0,
                     active_page_id: active_page_id.clone(),
                     on_select_page,
+                    on_delete_menu,
                 }
             }
         }
@@ -33,8 +36,11 @@ fn ApplicationNavigationItem(
     depth: usize,
     active_page_id: Option<String>,
     on_select_page: Callback<String>,
+    on_delete_menu: Option<Callback<String>>,
 ) -> Element {
     let page_id = menu.page_id.clone();
+    let menu_id = menu.id.clone();
+    let delete_label = format!("删除菜单 {}", menu.label);
     let icon = resolved_navigation_icon(menu.icon.as_deref(), &menu.label).to_owned();
     let children = menu
         .children
@@ -49,29 +55,43 @@ fn ApplicationNavigationItem(
             } else {
                 "application-shell__navigation-item"
             },
-            if let Some(page_id) = page_id {
-                Button {
-                    class: "application-shell__navigation-button",
-                    r#type: "button",
-                    variant: if active_page_id.as_deref() == Some(page_id.as_str()) {
-                        ButtonVariant::Secondary
-                    } else {
-                        ButtonVariant::Ghost
-                    },
-                    title: menu.label.clone(),
-                    aria_label: menu.label.clone(),
-                    onclick: move |_| on_select_page.call(page_id.clone()),
-                    span { class: "application-shell__navigation-icon", aria_hidden: "true",
-                        NavigationIcon { name: icon, class: "size-4".to_owned() }
+            div { class: "application-shell__navigation-row",
+                if let Some(page_id) = page_id {
+                    Button {
+                        class: "application-shell__navigation-button",
+                        r#type: "button",
+                        variant: if active_page_id.as_deref() == Some(page_id.as_str()) {
+                            ButtonVariant::Secondary
+                        } else {
+                            ButtonVariant::Ghost
+                        },
+                        title: menu.label.clone(),
+                        aria_label: menu.label.clone(),
+                        onclick: move |_| on_select_page.call(page_id.clone()),
+                        span { class: "application-shell__navigation-icon", aria_hidden: "true",
+                            NavigationIcon { name: icon, class: "size-4".to_owned() }
+                        }
+                        span { class: "application-shell__navigation-label", "{menu.label}" }
                     }
-                    span { class: "application-shell__navigation-label", "{menu.label}" }
+                } else {
+                    div { class: "application-shell__navigation-heading",
+                        span { class: "application-shell__navigation-icon", aria_hidden: "true",
+                            NavigationIcon { name: icon, class: "size-4".to_owned() }
+                        }
+                        span { class: "application-shell__navigation-label", "{menu.label}" }
+                    }
                 }
-            } else {
-                div { class: "application-shell__navigation-heading",
-                    span { class: "application-shell__navigation-icon", aria_hidden: "true",
-                        NavigationIcon { name: icon, class: "size-4".to_owned() }
+                if let Some(delete_menu) = on_delete_menu {
+                    Button {
+                        class: "application-shell__navigation-delete",
+                        r#type: "button",
+                        size: ButtonSize::IconXs,
+                        variant: ButtonVariant::Ghost,
+                        title: "{delete_label}",
+                        aria_label: "{delete_label}",
+                        onclick: move |_| delete_menu.call(menu_id.clone()),
+                        Trash2 { class: "size-3" }
                     }
-                    span { class: "application-shell__navigation-label", "{menu.label}" }
                 }
             }
             if !children.is_empty() {
@@ -85,6 +105,7 @@ fn ApplicationNavigationItem(
                             depth: depth + 1,
                             active_page_id: active_page_id.clone(),
                             on_select_page,
+                            on_delete_menu,
                         }
                     }
                 }

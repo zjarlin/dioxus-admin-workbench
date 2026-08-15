@@ -29,6 +29,7 @@ pub fn ApplicationShell(
     #[props(default)] on_create_scene: Option<Callback<()>>,
     #[props(default)] on_delete_scene: Option<Callback<String>>,
     #[props(default)] on_create_menu: Option<Callback<()>>,
+    #[props(default)] on_delete_menu: Option<Callback<String>>,
     #[props(default)] on_configure_page: Option<Callback<()>>,
     children: Element,
 ) -> Element {
@@ -43,6 +44,12 @@ pub fn ApplicationShell(
     let shell_account_action = Callback::new(move |action| {
         account_menu_open.set(false);
         on_account_action.call(action);
+    });
+    let shell_delete_menu = on_delete_menu.map(|delete_menu| {
+        Callback::new(move |menu_id: String| {
+            mobile_navigation_open.set(false);
+            delete_menu.call(menu_id);
+        })
     });
     rsx! {
         UiStylesheets {}
@@ -85,6 +92,7 @@ pub fn ApplicationShell(
                     on_select_page: shell_select_page,
                     on_account_action: shell_account_action,
                     on_create_menu,
+                    on_delete_menu: shell_delete_menu,
                 }
             }
             main { class: "application-shell__main",
@@ -186,6 +194,7 @@ pub fn ApplicationShell(
                     on_select_page: shell_select_page,
                     on_account_action: shell_account_action,
                     on_create_menu,
+                    on_delete_menu: shell_delete_menu,
                 }
             }
         }
@@ -241,10 +250,11 @@ fn ApplicationNavigationPanel(
     on_select_page: Callback<String>,
     on_account_action: Callback<ApplicationAccountAction>,
     on_create_menu: Option<Callback<()>>,
+    on_delete_menu: Option<Callback<String>>,
 ) -> Element {
     rsx! {
         div { class: "application-shell__navigation-panel",
-            ApplicationNavigation { menus, active_page_id, on_select_page }
+            ApplicationNavigation { menus, active_page_id, on_select_page, on_delete_menu }
             footer { class: "application-shell__sidebar-footer",
                 if let Some(create_menu) = on_create_menu {
                     Button {

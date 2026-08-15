@@ -3223,6 +3223,14 @@ body {
   padding-block: .25rem;
 }
 
+.application-shell__navigation-row {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .125rem;
+}
+
 .dx-button.application-shell__navigation-button,
 .dx-button.application-shell__create-menu,
 .dx-button.application-shell__account-trigger,
@@ -3233,6 +3241,16 @@ body {
 
 .application-shell__navigation-button {
   min-height: 2.25rem;
+}
+
+.dx-button.application-shell__navigation-delete {
+  flex: 0 0 auto;
+  color: var(--muted-foreground);
+}
+
+.dx-button.application-shell__navigation-delete:hover,
+.dx-button.application-shell__navigation-delete:focus-visible {
+  color: var(--destructive);
 }
 
 .application-shell__navigation-heading {
@@ -3495,6 +3513,7 @@ body {
 .application-shell[data-sidebar-collapsed="true"] .application-shell__sidebar-label,
 .application-shell[data-sidebar-collapsed="true"] .application-shell__account-label,
 .application-shell[data-sidebar-collapsed="true"] .application-shell__account-chevron,
+.application-shell[data-sidebar-collapsed="true"] .application-shell__navigation-delete,
 .application-shell[data-sidebar-collapsed="true"] .application-shell__navigation-heading {
   display: none;
 }
