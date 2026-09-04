@@ -16,7 +16,6 @@ workspace = "../../.."
 [features]
 default = ["workbench"]
 workbench = [
-    "dep:anyhow",
     "dep:az-admin-shell-core",
     "dep:futures-util",
     "dep:manganis",
@@ -25,9 +24,10 @@ workbench = [
 ]
 
 [dependencies]
-anyhow = { workspace = true, optional = true }
+anyhow.workspace = true
 az-admin-shell-core = { workspace = true, optional = true }
 az-ui-components.workspace = true
+dill.workspace = true
 dioxus = { workspace = true, features = ["hooks", "document", "asset"] }
 futures-util = { workspace = true, optional = true }
 icons.workspace = true

@@ -4,6 +4,8 @@
 
 `ApplicationShell` 负责可折叠侧栏、移动导航、页面工具栏、菜单树和账户菜单。消费方只传入菜单模型、当前页面内容及操作回调；壳层不认识业务菜单、接口地址、持久化模型或生成产物。
 
+可安装页面仓库实现 `ApplicationPlugin`，由 Dill 绑定具体类型。`collect_application_pages` 按 `TypeId` 拒绝重复插件，并校验页面和场景导航；`PluginApplication` 将结果直接编排进同一个 `ApplicationShell`。插件不声明字符串运行时身份，页面 `id` 只用于业务导航。
+
 不需要元数据工作台时关闭默认 feature，依赖中不会包含 Provider 注册运行时：
 
 ```toml

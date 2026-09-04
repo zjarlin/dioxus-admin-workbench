@@ -19,6 +19,7 @@ repository = "https://github.com/zjarlin/dioxus-admin-workbench"
 
 [workspace.dependencies]
 anyhow = "1.0.99"
+dill = "0.15.0"
 az-admin-shell-core = { version = "=2026.8.13", path = "crates/admin-shell/core" }
 az-dioxus-admin-extension-crud = { version = "=2026.8.17", path = "extensions/crud" }
 az-dioxus-admin-shell = { version = "=2026.8.17", path = "crates/admin-shell/dioxus" }
