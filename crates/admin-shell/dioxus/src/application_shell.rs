@@ -21,6 +21,7 @@ pub fn ApplicationShell(
     menus: Vec<ApplicationMenuItem>,
     active_page_id: Option<String>,
     user: ApplicationUser,
+    #[props(default = true)] account_enabled: bool,
     on_select_scene: Callback<String>,
     on_select_page: Callback<String>,
     on_account_action: Callback<ApplicationAccountAction>,
@@ -88,6 +89,7 @@ pub fn ApplicationShell(
                     menus: menus.clone(),
                     active_page_id: active_page_id.clone(),
                     user: user.clone(),
+                    account_enabled,
                     account_menu_open,
                     on_select_page: shell_select_page,
                     on_account_action: shell_account_action,
@@ -190,6 +192,7 @@ pub fn ApplicationShell(
                     menus,
                     active_page_id,
                     user,
+                    account_enabled,
                     account_menu_open,
                     on_select_page: shell_select_page,
                     on_account_action: shell_account_action,
@@ -246,6 +249,7 @@ fn ApplicationNavigationPanel(
     menus: Vec<ApplicationMenuItem>,
     active_page_id: Option<String>,
     user: ApplicationUser,
+    account_enabled: bool,
     account_menu_open: Signal<bool>,
     on_select_page: Callback<String>,
     on_account_action: Callback<ApplicationAccountAction>,
@@ -255,20 +259,24 @@ fn ApplicationNavigationPanel(
     rsx! {
         div { class: "application-shell__navigation-panel",
             ApplicationNavigation { menus, active_page_id, on_select_page, on_delete_menu }
-            footer { class: "application-shell__sidebar-footer",
-                if let Some(create_menu) = on_create_menu {
-                    Button {
-                        class: "application-shell__create-menu",
-                        r#type: "button",
-                        variant: ButtonVariant::Outline,
-                        title: "新建菜单",
-                        aria_label: "新建菜单",
-                        onclick: move |_| create_menu.call(()),
-                        Plus { class: "size-4" }
-                        span { class: "application-shell__sidebar-label", "新建菜单" }
+            if on_create_menu.is_some() || account_enabled {
+                footer { class: "application-shell__sidebar-footer",
+                    if let Some(create_menu) = on_create_menu {
+                        Button {
+                            class: "application-shell__create-menu",
+                            r#type: "button",
+                            variant: ButtonVariant::Outline,
+                            title: "新建菜单",
+                            aria_label: "新建菜单",
+                            onclick: move |_| create_menu.call(()),
+                            Plus { class: "size-4" }
+                            span { class: "application-shell__sidebar-label", "新建菜单" }
+                        }
+                    }
+                    if account_enabled {
+                        ApplicationAccountMenu { user, open: account_menu_open, on_action: on_account_action }
                     }
                 }
-                ApplicationAccountMenu { user, open: account_menu_open, on_action: on_account_action }
             }
         }
     }

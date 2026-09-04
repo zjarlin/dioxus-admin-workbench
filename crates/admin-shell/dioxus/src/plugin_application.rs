@@ -28,6 +28,7 @@ pub fn PluginApplication(
     let menus = application_menus(&pages, active_scene_id.as_deref());
     let content = active_page.map(|page| (page.render)());
     let select_scene_pages = pages.clone();
+    let account_enabled = on_account_action.is_some();
 
     rsx! {
         ApplicationShell {
@@ -38,6 +39,7 @@ pub fn PluginApplication(
             menus,
             active_page_id: active_page_id(),
             user,
+            account_enabled,
             on_select_scene: move |scene_id: String| {
                 let next_page_id = select_scene_pages
                     .iter()
