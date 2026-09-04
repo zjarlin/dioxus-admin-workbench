@@ -58,15 +58,16 @@ pub fn PluginApplication(
 
 fn application_scenes(pages: &[ApplicationPage]) -> Vec<ApplicationSceneItem> {
     let mut seen = HashSet::new();
-    pages
-        .iter()
-        .filter_map(|page| {
-            seen.insert(page.scene.id).then(|| ApplicationSceneItem {
+    let mut scenes = Vec::new();
+    for page in pages {
+        if seen.insert(page.scene.id) {
+            scenes.push(ApplicationSceneItem {
                 id: page.scene.id.to_owned(),
                 label: page.scene.label.to_owned(),
-            })
-        })
-        .collect()
+            });
+        }
+    }
+    scenes
 }
 
 fn application_menus(
