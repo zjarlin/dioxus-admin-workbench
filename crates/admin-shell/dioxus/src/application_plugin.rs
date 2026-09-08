@@ -8,6 +8,8 @@ use anyhow::{Context as _, Result, ensure};
 use dill::{AllOf, Catalog};
 use dioxus::prelude::Element;
 
+use crate::ApplicationAccountItem;
+
 /// 壳层中的业务场景。
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ApplicationScene {
@@ -40,6 +42,11 @@ pub trait ApplicationPlugin: Any + Send + Sync {
     fn pages(&self) -> Vec<ApplicationPage>;
 }
 
+/// 账户插件向左下角账户区贡献动作或页面。
+pub trait ApplicationAccountPlugin: Any + Send + Sync {
+    fn items(&self) -> Vec<ApplicationAccountItem>;
+}
+
 pub type DynApplicationPlugin = Arc<dyn ApplicationPlugin>;
 
 /// 从 Dill 收集插件并校验页面导航契约。
@@ -66,6 +73,24 @@ pub fn collect_application_pages(catalog: &Catalog) -> Result<Vec<ApplicationPag
 
     ensure!(!pages.is_empty(), "应用至少需要一个页面");
     Ok(pages)
+}
+
+/// 从 Dill 聚合账户插件，账户动作身份只在当前组合内唯一。
+pub fn collect_application_account_items(catalog: &Catalog) -> Result<Vec<ApplicationAccountItem>> {
+    let plugins = catalog
+        .get::<AllOf<dyn ApplicationAccountPlugin>>()
+        .context("从 Dill 聚合账户插件失败")?;
+    let mut ids = HashSet::<String>::new();
+    let mut items = Vec::new();
+    for plugin in plugins {
+        for item in plugin.items() {
+            ensure!(!item.id.trim().is_empty(), "账户动作 id 不能为空");
+            ensure!(!item.label.trim().is_empty(), "账户动作标题不能为空");
+            ensure!(ids.insert(item.id.clone()), "账户动作 id 重复: {}", item.id);
+            items.push(item);
+        }
+    }
+    Ok(items)
 }
 
 fn validate_page(
@@ -98,6 +123,7 @@ mod tests {
 
     struct FirstPlugin;
     struct DuplicatePagePlugin;
+    struct AccountPlugin;
 
     impl ApplicationPlugin for FirstPlugin {
         fn pages(&self) -> Vec<ApplicationPage> {
@@ -108,6 +134,18 @@ mod tests {
     impl ApplicationPlugin for DuplicatePagePlugin {
         fn pages(&self) -> Vec<ApplicationPage> {
             vec![page("home")]
+        }
+    }
+
+    impl ApplicationAccountPlugin for AccountPlugin {
+        fn items(&self) -> Vec<ApplicationAccountItem> {
+            vec![ApplicationAccountItem {
+                id: "profile".to_owned(),
+                label: "个人资料".to_owned(),
+                icon: Some("user".to_owned()),
+                page_id: Some("profile".to_owned()),
+                destructive: false,
+            }]
         }
     }
 
@@ -155,6 +193,20 @@ mod tests {
             .context("重复页面必须被拒绝")?;
 
         assert!(error.to_string().contains("页面 id 重复"));
+        Ok(())
+    }
+
+    #[test]
+    fn collects_account_items_from_dill() -> Result<()> {
+        let catalog = Catalog::builder()
+            .add_value(AccountPlugin)
+            .bind::<dyn ApplicationAccountPlugin, AccountPlugin>()
+            .build();
+
+        let items = collect_application_account_items(&catalog)?;
+
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].page_id.as_deref(), Some("profile"));
         Ok(())
     }
 }

@@ -21,10 +21,11 @@ pub struct ApplicationUser {
     pub initials: String,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ApplicationAccountAction {
-    AgentSettings,
-    Profile,
-    ChangePassword,
-    SignOut,
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ApplicationAccountItem {
+    pub id: String,
+    pub label: String,
+    pub icon: Option<String>,
+    pub page_id: Option<String>,
+    pub destructive: bool,
 }

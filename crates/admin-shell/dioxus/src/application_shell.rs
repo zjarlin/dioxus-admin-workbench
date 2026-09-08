@@ -8,7 +8,7 @@ use dioxus::prelude::*;
 use icons::{PanelLeft, Pencil, Plus, Settings, Trash2, X};
 
 use crate::{
-    ApplicationAccountAction, ApplicationMenuItem, ApplicationSceneItem, ApplicationUser,
+    ApplicationAccountItem, ApplicationMenuItem, ApplicationSceneItem, ApplicationUser,
     application_account::ApplicationAccountMenu, application_navigation::ApplicationNavigation,
 };
 
@@ -24,7 +24,8 @@ pub fn ApplicationShell(
     #[props(default = true)] account_enabled: bool,
     on_select_scene: Callback<String>,
     on_select_page: Callback<String>,
-    on_account_action: Callback<ApplicationAccountAction>,
+    account_items: Vec<ApplicationAccountItem>,
+    on_account_action: Callback<String>,
     #[props(default)] status: Option<String>,
     #[props(default)] on_edit_application: Option<Callback<()>>,
     #[props(default)] on_create_scene: Option<Callback<()>>,
@@ -92,7 +93,8 @@ pub fn ApplicationShell(
                     account_enabled,
                     account_menu_open,
                     on_select_page: shell_select_page,
-                    on_account_action: shell_account_action,
+                    items: account_items.clone(),
+                    on_action: shell_account_action,
                     on_create_menu,
                     on_delete_menu: shell_delete_menu,
                 }
@@ -195,7 +197,8 @@ pub fn ApplicationShell(
                     account_enabled,
                     account_menu_open,
                     on_select_page: shell_select_page,
-                    on_account_action: shell_account_action,
+                    items: account_items,
+                    on_action: shell_account_action,
                     on_create_menu,
                     on_delete_menu: shell_delete_menu,
                 }
@@ -251,8 +254,9 @@ fn ApplicationNavigationPanel(
     user: ApplicationUser,
     account_enabled: bool,
     account_menu_open: Signal<bool>,
+    items: Vec<ApplicationAccountItem>,
     on_select_page: Callback<String>,
-    on_account_action: Callback<ApplicationAccountAction>,
+    on_action: Callback<String>,
     on_create_menu: Option<Callback<()>>,
     on_delete_menu: Option<Callback<String>>,
 ) -> Element {
@@ -274,7 +278,7 @@ fn ApplicationNavigationPanel(
                         }
                     }
                     if account_enabled {
-                        ApplicationAccountMenu { user, open: account_menu_open, on_action: on_account_action }
+                        ApplicationAccountMenu { user, open: account_menu_open, items, on_action }
                     }
                 }
             }

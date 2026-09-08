@@ -1,14 +1,16 @@
 use az_ui_components::button::{Button, ButtonVariant};
+use az_ui_components::navigation_icon::NavigationIcon;
 use dioxus::prelude::*;
-use icons::{ChevronDown, KeyRound, LogOut, Settings, UserRound};
+use icons::ChevronDown;
 
-use crate::{ApplicationAccountAction, ApplicationUser};
+use crate::{ApplicationAccountItem, ApplicationUser};
 
 #[component]
 pub(crate) fn ApplicationAccountMenu(
     user: ApplicationUser,
     mut open: Signal<bool>,
-    on_action: Callback<ApplicationAccountAction>,
+    items: Vec<ApplicationAccountItem>,
+    on_action: Callback<String>,
 ) -> Element {
     let menu_label = format!("打开 {} 的账户菜单", user.label);
     rsx! {
@@ -46,28 +48,8 @@ pub(crate) fn ApplicationAccountMenu(
                         }
                     }
                     div { class: "application-shell__account-actions",
-                        AccountActionButton {
-                            action: ApplicationAccountAction::AgentSettings,
-                            label: "Agent 设置",
-                            on_action,
-                        }
-                        AccountActionButton {
-                            action: ApplicationAccountAction::Profile,
-                            label: "个人资料",
-                            on_action,
-                        }
-                        AccountActionButton {
-                            action: ApplicationAccountAction::ChangePassword,
-                            label: "修改密码",
-                            on_action,
-                        }
-                    }
-                    div { class: "application-shell__account-signout",
-                        AccountActionButton {
-                            action: ApplicationAccountAction::SignOut,
-                            label: "退出系统",
-                            destructive: true,
-                            on_action,
+                        for item in items {
+                            AccountActionButton { item, on_action }
                         }
                     }
                 }
@@ -77,15 +59,11 @@ pub(crate) fn ApplicationAccountMenu(
 }
 
 #[component]
-fn AccountActionButton(
-    action: ApplicationAccountAction,
-    label: &'static str,
-    #[props(default)] destructive: bool,
-    on_action: Callback<ApplicationAccountAction>,
-) -> Element {
+fn AccountActionButton(item: ApplicationAccountItem, on_action: Callback<String>) -> Element {
+    let item_id = item.id.clone();
     rsx! {
         Button {
-            class: if destructive {
+            class: if item.destructive {
                 "application-shell__account-action application-shell__account-action--destructive"
             } else {
                 "application-shell__account-action"
@@ -93,14 +71,12 @@ fn AccountActionButton(
             r#type: "button",
             variant: ButtonVariant::Ghost,
             role: "menuitem",
-            onclick: move |_| on_action.call(action),
-            match action {
-                ApplicationAccountAction::AgentSettings => rsx! { Settings { class: "size-4" } },
-                ApplicationAccountAction::Profile => rsx! { UserRound { class: "size-4" } },
-                ApplicationAccountAction::ChangePassword => rsx! { KeyRound { class: "size-4" } },
-                ApplicationAccountAction::SignOut => rsx! { LogOut { class: "size-4" } },
+            onclick: move |_| on_action.call(item_id.clone()),
+            NavigationIcon {
+                name: item.icon.as_deref().unwrap_or("user").to_owned(),
+                class: "size-4".to_owned(),
             }
-            span { "{label}" }
+            span { "{item.label}" }
         }
     }
 }

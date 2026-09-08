@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use dioxus::prelude::*;
 
 use crate::{
-    ApplicationAccountAction, ApplicationMenuItem, ApplicationPage, ApplicationSceneItem,
+    ApplicationAccountItem, ApplicationMenuItem, ApplicationPage, ApplicationSceneItem,
     ApplicationShell, ApplicationUser,
 };
 
@@ -13,7 +13,8 @@ pub fn PluginApplication(
     application_label: String,
     pages: Vec<ApplicationPage>,
     user: ApplicationUser,
-    #[props(default)] on_account_action: Option<Callback<ApplicationAccountAction>>,
+    #[props(default)] account_items: Vec<ApplicationAccountItem>,
+    #[props(default)] on_account_action: Option<Callback<String>>,
 ) -> Element {
     let initial_page_id = pages.first().map(|page| page.id.to_owned());
     let mut active_page_id = use_signal(move || initial_page_id);
@@ -28,7 +29,21 @@ pub fn PluginApplication(
     let menus = application_menus(&pages, active_scene_id.as_deref());
     let content = active_page.map(|page| (page.render)());
     let select_scene_pages = pages.clone();
-    let account_enabled = on_account_action.is_some();
+    let account_enabled = !account_items.is_empty();
+    let account_action_items = account_items.clone();
+    let account_action = Callback::new(move |action_id: String| {
+        if let Some(page_id) = account_action_items
+            .iter()
+            .find(|item| item.id == action_id)
+            .and_then(|item| item.page_id.as_deref())
+        {
+            active_page_id.set(Some(page_id.to_owned()));
+            return;
+        }
+        if let Some(callback) = on_account_action {
+            callback.call(action_id);
+        }
+    });
 
     rsx! {
         ApplicationShell {
@@ -48,11 +63,8 @@ pub fn PluginApplication(
                 active_page_id.set(next_page_id);
             },
             on_select_page: move |page_id: String| active_page_id.set(Some(page_id)),
-            on_account_action: move |action| {
-                if let Some(callback) = on_account_action {
-                    callback.call(action);
-                }
-            },
+            on_account_action: account_action,
+            account_items,
             {content}
         }
     }
