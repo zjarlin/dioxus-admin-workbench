@@ -260,9 +260,20 @@ fn ApplicationNavigationPanel(
     on_create_menu: Option<Callback<()>>,
     on_delete_menu: Option<Callback<String>>,
 ) -> Element {
+    let navigation_key = menus
+        .iter()
+        .map(|menu| menu.id.as_str())
+        .collect::<Vec<_>>()
+        .join("|");
     rsx! {
         div { class: "application-shell__navigation-panel",
-            ApplicationNavigation { menus, active_page_id, on_select_page, on_delete_menu }
+            ApplicationNavigation {
+                key: "{navigation_key}",
+                menus,
+                active_page_id,
+                on_select_page,
+                on_delete_menu,
+            }
             if on_create_menu.is_some() || account_enabled {
                 footer { class: "application-shell__sidebar-footer",
                     if let Some(create_menu) = on_create_menu {
