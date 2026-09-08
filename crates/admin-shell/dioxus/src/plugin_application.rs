@@ -179,6 +179,7 @@ mod tests {
                 id: scene_id,
                 label: scene_id,
             },
+            required_permission: None,
             render: render_page,
         }
     }
@@ -197,6 +198,7 @@ mod tests {
             icon: None,
             scene_id: "plugins".to_owned(),
             scene_label: "插件".to_owned(),
+            required_permission: None,
             definition: "{}".to_owned(),
         }];
         let scenes = application_scenes(&pages, &runtime_pages);

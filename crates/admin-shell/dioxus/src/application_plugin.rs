@@ -24,6 +24,7 @@ pub struct ApplicationPage {
     pub label: &'static str,
     pub icon: Option<&'static str>,
     pub scene: ApplicationScene,
+    pub required_permission: Option<&'static str>,
     pub render: fn() -> Element,
 }
 
@@ -33,6 +34,7 @@ impl PartialEq for ApplicationPage {
             && self.label == other.label
             && self.icon == other.icon
             && self.scene == other.scene
+            && self.required_permission == other.required_permission
             && std::ptr::fn_addr_eq(self.render, other.render)
     }
 }
@@ -86,6 +88,12 @@ pub fn collect_application_account_items(catalog: &Catalog) -> Result<Vec<Applic
         for item in plugin.items() {
             ensure!(!item.id.trim().is_empty(), "账户动作 id 不能为空");
             ensure!(!item.label.trim().is_empty(), "账户动作标题不能为空");
+            ensure!(
+                item.required_permission
+                    .as_deref()
+                    .is_none_or(|permission| !permission.trim().is_empty()),
+                "账户动作权限不能为空字符串"
+            );
             ensure!(ids.insert(item.id.clone()), "账户动作 id 重复: {}", item.id);
             items.push(item);
         }
@@ -102,6 +110,11 @@ fn validate_page(
     ensure!(!page.label.trim().is_empty(), "页面标题不能为空");
     ensure!(!page.scene.id.trim().is_empty(), "场景 id 不能为空");
     ensure!(!page.scene.label.trim().is_empty(), "场景标题不能为空");
+    ensure!(
+        page.required_permission
+            .is_none_or(|permission| !permission.trim().is_empty()),
+        "页面权限不能为空字符串"
+    );
     ensure!(page_ids.insert(page.id), "页面 id 重复: {}", page.id);
 
     if let Some(label) = scenes.insert(page.scene.id, page.scene.label) {
@@ -144,6 +157,7 @@ mod tests {
                 label: "个人资料".to_owned(),
                 icon: Some("user".to_owned()),
                 page_id: Some("profile".to_owned()),
+                required_permission: None,
                 destructive: false,
             }]
         }
@@ -158,6 +172,7 @@ mod tests {
                 id: "workspace",
                 label: "工作区",
             },
+            required_permission: None,
             render: render_page,
         }
     }

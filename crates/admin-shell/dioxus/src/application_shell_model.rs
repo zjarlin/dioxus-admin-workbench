@@ -27,6 +27,7 @@ pub struct ApplicationAccountItem {
     pub label: String,
     pub icon: Option<String>,
     pub page_id: Option<String>,
+    pub required_permission: Option<String>,
     pub destructive: bool,
 }
 
@@ -38,5 +39,6 @@ pub struct ApplicationRuntimePage {
     pub icon: Option<String>,
     pub scene_id: String,
     pub scene_label: String,
+    pub required_permission: Option<String>,
     pub definition: String,
 }
