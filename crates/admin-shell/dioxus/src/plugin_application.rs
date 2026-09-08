@@ -50,7 +50,7 @@ pub fn PluginApplication(
         .or_else(|| active_runtime_page.map(|page| page.label.clone()))
         .unwrap_or_else(|| "暂无页面".to_owned());
     let scenes = application_scenes(&pages, &runtime_pages);
-    let menus = application_menus(&pages, &runtime_pages, active_scene_id.as_deref());
+    let menus = application_menus(&pages, &runtime_pages);
     let content = active_page.map(|page| (page.render)()).or_else(|| {
         active_runtime_page
             .and_then(|page| render_runtime_page.map(|renderer| renderer.call(page.clone())))
@@ -132,34 +132,64 @@ fn application_scenes(
 fn application_menus(
     pages: &[ApplicationPage],
     runtime_pages: &[ApplicationRuntimePage],
-    active_scene_id: Option<&str>,
 ) -> Vec<ApplicationMenuItem> {
-    let mut menus = pages
-        .iter()
-        .filter(|page| active_scene_id == Some(page.scene.id))
-        .map(|page| ApplicationMenuItem {
+    let mut group_indexes = std::collections::HashMap::<String, usize>::new();
+    let mut groups = Vec::<ApplicationMenuItem>::new();
+    for page in pages {
+        let index = scene_group(
+            &mut groups,
+            &mut group_indexes,
+            page.scene.id,
+            page.scene.label,
+        );
+        groups[index].children.push(ApplicationMenuItem {
             id: page.id.to_owned(),
             label: page.label.to_owned(),
             icon: page.icon.map(str::to_owned),
             page_id: Some(page.id.to_owned()),
             enabled: true,
             children: Vec::new(),
-        })
-        .collect::<Vec<_>>();
-    menus.extend(
-        runtime_pages
-            .iter()
-            .filter(|page| active_scene_id == Some(page.scene_id.as_str()))
-            .map(|page| ApplicationMenuItem {
-                id: page.id.clone(),
-                label: page.label.clone(),
-                icon: page.icon.clone(),
-                page_id: Some(page.id.clone()),
-                enabled: true,
-                children: Vec::new(),
-            }),
-    );
-    menus
+        });
+    }
+    for page in runtime_pages {
+        let index = scene_group(
+            &mut groups,
+            &mut group_indexes,
+            &page.scene_id,
+            &page.scene_label,
+        );
+        groups[index].children.push(ApplicationMenuItem {
+            id: page.id.clone(),
+            label: page.label.clone(),
+            icon: page.icon.clone(),
+            page_id: Some(page.id.clone()),
+            enabled: true,
+            children: Vec::new(),
+        });
+    }
+    groups
+}
+
+fn scene_group(
+    groups: &mut Vec<ApplicationMenuItem>,
+    indexes: &mut std::collections::HashMap<String, usize>,
+    id: &str,
+    label: &str,
+) -> usize {
+    if let Some(index) = indexes.get(id) {
+        return *index;
+    }
+    let index = groups.len();
+    groups.push(ApplicationMenuItem {
+        id: format!("scene-{id}"),
+        label: label.to_owned(),
+        icon: None,
+        page_id: None,
+        enabled: true,
+        children: Vec::new(),
+    });
+    indexes.insert(id.to_owned(), index);
+    index
 }
 
 #[cfg(test)]
@@ -202,10 +232,11 @@ mod tests {
             definition: "{}".to_owned(),
         }];
         let scenes = application_scenes(&pages, &runtime_pages);
-        let menus = application_menus(&pages, &runtime_pages, Some("workspace"));
+        let menus = application_menus(&pages, &runtime_pages);
 
         assert_eq!(scenes.len(), 3);
-        assert_eq!(menus.len(), 2);
-        assert_eq!(menus[1].page_id.as_deref(), Some("orders"));
+        assert_eq!(menus.len(), 3);
+        assert_eq!(menus[0].children.len(), 2);
+        assert_eq!(menus[0].children[1].page_id.as_deref(), Some("orders"));
     }
 }
