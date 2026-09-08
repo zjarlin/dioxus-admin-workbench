@@ -113,9 +113,20 @@ pub fn PluginApplication(
     }
 }
 
-#[component]
-fn ApplicationPluginPage(render: fn() -> Element) -> Element {
-    render()
+#[derive(Clone, Props)]
+struct ApplicationPluginPageProps {
+    render: fn() -> Element,
+}
+
+impl PartialEq for ApplicationPluginPageProps {
+    fn eq(&self, other: &Self) -> bool {
+        std::ptr::fn_addr_eq(self.render, other.render)
+    }
+}
+
+#[allow(non_snake_case)]
+fn ApplicationPluginPage(props: ApplicationPluginPageProps) -> Element {
+    (props.render)()
 }
 
 fn application_scenes(
