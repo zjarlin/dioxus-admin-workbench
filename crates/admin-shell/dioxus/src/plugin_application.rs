@@ -3,8 +3,8 @@ use std::collections::HashSet;
 use dioxus::prelude::*;
 
 use crate::{
-    ApplicationAccountItem, ApplicationMenuItem, ApplicationPage, ApplicationSceneItem,
-    ApplicationShell, ApplicationUser,
+    ApplicationAccountItem, ApplicationMenuItem, ApplicationPage, ApplicationRuntimePage,
+    ApplicationSceneItem, ApplicationShell, ApplicationUser,
 };
 
 /// 将插件页面编排为可容纳多场景、多页面的应用壳。
@@ -13,22 +13,50 @@ pub fn PluginApplication(
     application_label: String,
     pages: Vec<ApplicationPage>,
     user: ApplicationUser,
+    #[props(default)] runtime_pages: Vec<ApplicationRuntimePage>,
+    #[props(default)] render_runtime_page: Option<Callback<ApplicationRuntimePage, Element>>,
     #[props(default)] account_items: Vec<ApplicationAccountItem>,
     #[props(default)] on_account_action: Option<Callback<String>>,
 ) -> Element {
-    let initial_page_id = pages.first().map(|page| page.id.to_owned());
+    let initial_page_id = pages
+        .first()
+        .map(|page| page.id.to_owned())
+        .or_else(|| runtime_pages.first().map(|page| page.id.clone()));
     let mut active_page_id = use_signal(move || initial_page_id);
-    let active_page = active_page_id()
+    let active_page_id_value = active_page_id();
+    let selected_page = active_page_id_value
         .as_deref()
-        .and_then(|id| pages.iter().find(|page| page.id == id))
-        .or_else(|| pages.first());
-    let active_scene_id = active_page.map(|page| page.scene.id.to_owned());
-    let page_label =
-        active_page.map_or_else(|| "暂无页面".to_owned(), |page| page.label.to_owned());
-    let scenes = application_scenes(&pages);
-    let menus = application_menus(&pages, active_scene_id.as_deref());
-    let content = active_page.map(|page| (page.render)());
+        .and_then(|id| pages.iter().find(|page| page.id == id));
+    let selected_runtime_page = active_page_id_value
+        .as_deref()
+        .and_then(|id| runtime_pages.iter().find(|page| page.id == id));
+    let active_page = selected_page.or_else(|| {
+        selected_runtime_page
+            .is_none()
+            .then(|| pages.first())
+            .flatten()
+    });
+    let active_runtime_page = selected_runtime_page.or_else(|| {
+        active_page
+            .is_none()
+            .then(|| runtime_pages.first())
+            .flatten()
+    });
+    let active_scene_id = active_page
+        .map(|page| page.scene.id.to_owned())
+        .or_else(|| active_runtime_page.map(|page| page.scene_id.clone()));
+    let page_label = active_page
+        .map(|page| page.label.to_owned())
+        .or_else(|| active_runtime_page.map(|page| page.label.clone()))
+        .unwrap_or_else(|| "暂无页面".to_owned());
+    let scenes = application_scenes(&pages, &runtime_pages);
+    let menus = application_menus(&pages, &runtime_pages, active_scene_id.as_deref());
+    let content = active_page.map(|page| (page.render)()).or_else(|| {
+        active_runtime_page
+            .and_then(|page| render_runtime_page.map(|renderer| renderer.call(page.clone())))
+    });
     let select_scene_pages = pages.clone();
+    let select_scene_runtime_pages = runtime_pages.clone();
     let account_enabled = !account_items.is_empty();
     let account_action_items = account_items.clone();
     let account_action = Callback::new(move |action_id: String| {
@@ -59,7 +87,13 @@ pub fn PluginApplication(
                 let next_page_id = select_scene_pages
                     .iter()
                     .find(|page| page.scene.id == scene_id)
-                    .map(|page| page.id.to_owned());
+                    .map(|page| page.id.to_owned())
+                    .or_else(|| {
+                        select_scene_runtime_pages
+                            .iter()
+                            .find(|page| page.scene_id == scene_id)
+                            .map(|page| page.id.clone())
+                    });
                 active_page_id.set(next_page_id);
             },
             on_select_page: move |page_id: String| active_page_id.set(Some(page_id)),
@@ -70,7 +104,10 @@ pub fn PluginApplication(
     }
 }
 
-fn application_scenes(pages: &[ApplicationPage]) -> Vec<ApplicationSceneItem> {
+fn application_scenes(
+    pages: &[ApplicationPage],
+    runtime_pages: &[ApplicationRuntimePage],
+) -> Vec<ApplicationSceneItem> {
     let mut seen = HashSet::new();
     let mut scenes = Vec::new();
     for page in pages {
@@ -81,14 +118,23 @@ fn application_scenes(pages: &[ApplicationPage]) -> Vec<ApplicationSceneItem> {
             });
         }
     }
+    for page in runtime_pages {
+        if seen.insert(page.scene_id.as_str()) {
+            scenes.push(ApplicationSceneItem {
+                id: page.scene_id.clone(),
+                label: page.scene_label.clone(),
+            });
+        }
+    }
     scenes
 }
 
 fn application_menus(
     pages: &[ApplicationPage],
+    runtime_pages: &[ApplicationRuntimePage],
     active_scene_id: Option<&str>,
 ) -> Vec<ApplicationMenuItem> {
-    pages
+    let mut menus = pages
         .iter()
         .filter(|page| active_scene_id == Some(page.scene.id))
         .map(|page| ApplicationMenuItem {
@@ -99,7 +145,21 @@ fn application_menus(
             enabled: true,
             children: Vec::new(),
         })
-        .collect()
+        .collect::<Vec<_>>();
+    menus.extend(
+        runtime_pages
+            .iter()
+            .filter(|page| active_scene_id == Some(page.scene_id.as_str()))
+            .map(|page| ApplicationMenuItem {
+                id: page.id.clone(),
+                label: page.label.clone(),
+                icon: page.icon.clone(),
+                page_id: Some(page.id.clone()),
+                enabled: true,
+                children: Vec::new(),
+            }),
+    );
+    menus
 }
 
 #[cfg(test)]
@@ -131,10 +191,18 @@ mod tests {
             page("settings", "system"),
         ];
 
-        let scenes = application_scenes(&pages);
-        let menus = application_menus(&pages, Some("workspace"));
+        let runtime_pages = vec![ApplicationRuntimePage {
+            id: "runtime".to_owned(),
+            label: "运行时".to_owned(),
+            icon: None,
+            scene_id: "plugins".to_owned(),
+            scene_label: "插件".to_owned(),
+            definition: "{}".to_owned(),
+        }];
+        let scenes = application_scenes(&pages, &runtime_pages);
+        let menus = application_menus(&pages, &runtime_pages, Some("workspace"));
 
-        assert_eq!(scenes.len(), 2);
+        assert_eq!(scenes.len(), 3);
         assert_eq!(menus.len(), 2);
         assert_eq!(menus[1].page_id.as_deref(), Some("orders"));
     }
