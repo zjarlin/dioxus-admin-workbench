@@ -51,10 +51,19 @@ pub fn PluginApplication(
         .unwrap_or_else(|| "暂无页面".to_owned());
     let scenes = application_scenes(&pages, &runtime_pages);
     let menus = application_menus(&pages, &runtime_pages);
-    let content = active_page.map(|page| (page.render)()).or_else(|| {
-        active_runtime_page
-            .and_then(|page| render_runtime_page.map(|renderer| renderer.call(page.clone())))
-    });
+    let content = active_page
+        .map(|page| {
+            rsx! {
+                ApplicationPluginPage {
+                    key: "{page.id}",
+                    render: page.render,
+                }
+            }
+        })
+        .or_else(|| {
+            active_runtime_page
+                .and_then(|page| render_runtime_page.map(|renderer| renderer.call(page.clone())))
+        });
     let select_scene_pages = pages.clone();
     let select_scene_runtime_pages = runtime_pages.clone();
     let account_enabled = !account_items.is_empty();
@@ -102,6 +111,11 @@ pub fn PluginApplication(
             {content}
         }
     }
+}
+
+#[component]
+fn ApplicationPluginPage(render: fn() -> Element) -> Element {
+    render()
 }
 
 fn application_scenes(
