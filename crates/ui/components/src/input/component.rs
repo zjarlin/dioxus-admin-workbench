@@ -2,6 +2,33 @@ use dioxus::prelude::*;
 
 const INPUT_CLASS: &str = "dx-input";
 
+/// 带可见标签和双向值回调的常用文本输入框。
+#[component]
+pub fn TextInput(
+    label: String,
+    value: String,
+    on_change: EventHandler<String>,
+    #[props(default)] input_type: String,
+    #[props(default)] placeholder: Option<String>,
+    #[props(default)] autocomplete: Option<String>,
+) -> Element {
+    let id = format!("input-{}", label.to_lowercase().replace(' ', "-"));
+    rsx! {
+        fieldset { class: "grid gap-2",
+            label { class: "text-sm font-medium", r#for: "{id}", "{label}" }
+            Input {
+                id: id.clone(),
+                r#type: input_type,
+                placeholder: placeholder,
+                autocomplete: autocomplete,
+                aria_label: label,
+                value: value,
+                oninput: move |event: FormEvent| on_change.call(event.value()),
+            }
+        }
+    }
+}
+
 #[component]
 pub fn Input(
     oninput: Option<EventHandler<FormEvent>>,
