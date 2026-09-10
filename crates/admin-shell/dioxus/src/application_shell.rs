@@ -45,6 +45,7 @@ pub fn ApplicationShell(
     });
     let shell_account_action = Callback::new(move |action| {
         account_menu_open.set(false);
+        mobile_navigation_open.set(false);
         on_account_action.call(action);
     });
     let shell_delete_menu = on_delete_menu.map(|delete_menu| {
@@ -222,6 +223,7 @@ fn ApplicationSceneTab(
             Button {
                 class: "application-shell__scene-select",
                 r#type: "button",
+                aria_pressed: active.to_string(),
                 size: ButtonSize::Sm,
                 variant: if active {
                     ButtonVariant::Secondary
