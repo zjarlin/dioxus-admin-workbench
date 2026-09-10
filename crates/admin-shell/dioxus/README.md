@@ -8,7 +8,34 @@
 
 可安装页面仓库实现 `ApplicationPlugin`，由 Dill 绑定具体类型。`collect_application_pages` 按 `TypeId` 拒绝重复插件，并校验页面和场景导航；`PluginApplication` 将结果直接编排进同一个 `ApplicationShell`。插件不声明字符串运行时身份，页面 `id` 只用于业务导航。
 
-场景是菜单树的根，由顶部标签切换；侧栏只渲染当前根的后代，不把场景再包装成侧栏分组。`ApplicationAccountPlugin` 通过 `page_id` 贡献的页面属于账户全屏入口，不进入场景菜单树。此规则同样用于运行时插件及子插件，壳不根据页面名称判断。打开账户页面时后台组件保持挂载，返回后恢复原场景、页面和页面内部状态；退出等无 `page_id` 动作继续交给宿主回调。
+场景是菜单树的根，由顶部标签切换；侧栏只渲染当前根的后代，不把场景再包装成侧栏分组。页面通过 `menu_path` 显式声明从场景根到叶子页面之间的分组路径，空路径表示直属页面。多个插件可贡献相同 `id`、场景、父节点及展示信息的分组，壳会把这些页面合并到一个节点；标题、图标、场景或父节点不一致会拒绝整个组合，路径内重复分组同样按循环拒绝。
+
+```rust,no_run
+use az_dioxus_admin_shell::{ApplicationMenuGroup, ApplicationPage, ApplicationScene};
+use dioxus::prelude::*;
+
+fn dictionary_page() -> Element {
+    rsx! { p { "字典管理" } }
+}
+
+let page = ApplicationPage {
+    id: "dictionary",
+    label: "字典管理",
+    icon: Some("book_open"),
+    scene: ApplicationScene { id: "system", label: "系统" },
+    menu_path: vec![ApplicationMenuGroup {
+        id: "system-management".to_owned(),
+        label: "系统管理".to_owned(),
+        icon: Some("settings".to_owned()),
+    }],
+    required_permission: Some("dictionary:read"),
+    render: dictionary_page,
+};
+```
+
+`ApplicationMenuGroup` 同时用于编译进壳的 `ApplicationPage` 和动态 `ApplicationRuntimePage`，因此二进制插件与运行时插件遵循同一棵树契约。分组节点可逐层展开、折叠；切换顶部场景时会进入该根下的第一个后代页面，而不是假设第一层节点就是页面。
+
+`ApplicationAccountPlugin` 通过 `page_id` 贡献的页面属于账户全屏入口，不进入场景菜单树。此规则同样用于运行时插件及子插件，壳不根据页面名称判断。打开账户页面时后台组件保持挂载，返回后恢复原场景、页面和页面内部状态；退出等无 `page_id` 动作继续交给宿主回调。
 
 不需要元数据工作台时关闭默认 feature，依赖中不会包含 Provider 注册运行时：
 

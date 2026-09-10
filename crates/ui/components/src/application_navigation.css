@@ -1,0 +1,17 @@
+.dx-button.application-shell__navigation-group-toggle .application-shell__navigation-label {
+  flex: 1 1 auto;
+}
+
+.application-shell__navigation-chevron {
+  flex: 0 0 auto;
+  color: var(--muted-foreground);
+  transition: transform 150ms ease;
+}
+
+.application-shell__navigation-chevron[data-expanded="true"] {
+  transform: rotate(90deg);
+}
+
+.application-shell[data-sidebar-collapsed="true"] .application-shell__navigation-chevron {
+  display: none;
+}

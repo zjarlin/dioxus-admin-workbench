@@ -7,6 +7,7 @@ mod application_navigation;
 mod application_plugin;
 mod application_shell;
 mod application_shell_model;
+mod navigation_validation;
 mod plugin_application;
 mod plugin_navigation;
 

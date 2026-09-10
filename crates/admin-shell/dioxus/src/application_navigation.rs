@@ -3,7 +3,7 @@ use az_ui_components::{
     navigation_icon::{NavigationIcon, resolved_navigation_icon},
 };
 use dioxus::prelude::*;
-use icons::Trash2;
+use icons::{ChevronRight, Trash2};
 
 use crate::ApplicationMenuItem;
 
@@ -48,6 +48,7 @@ fn ApplicationNavigationItem(
         .filter(|child| child.enabled)
         .collect::<Vec<_>>();
     let is_group = page_id.is_none();
+    let mut expanded = use_signal(|| true);
     rsx! {
         section {
             class: if is_group {
@@ -74,11 +75,23 @@ fn ApplicationNavigationItem(
                         span { class: "application-shell__navigation-label", "{menu.label}" }
                     }
                 } else {
-                    div { class: "application-shell__navigation-heading",
+                    Button {
+                        class: "application-shell__navigation-button application-shell__navigation-group-toggle",
+                        r#type: "button",
+                        variant: ButtonVariant::Ghost,
+                        title: menu.label.clone(),
+                        aria_label: menu.label.clone(),
+                        aria_expanded: expanded().to_string(),
+                        onclick: move |_| expanded.toggle(),
                         span { class: "application-shell__navigation-icon", aria_hidden: "true",
                             NavigationIcon { name: icon, class: "size-4".to_owned() }
                         }
                         span { class: "application-shell__navigation-label", "{menu.label}" }
+                        span {
+                            class: "application-shell__navigation-chevron size-4",
+                            "data-expanded": expanded().to_string(),
+                            ChevronRight { class: "size-4" }
+                        }
                     }
                 }
                 if let Some(delete_menu) = on_delete_menu {
@@ -94,7 +107,7 @@ fn ApplicationNavigationItem(
                     }
                 }
             }
-            if !children.is_empty() {
+            if !children.is_empty() && expanded() {
                 div {
                     class: "application-shell__navigation-children",
                     "data-depth": depth.to_string(),

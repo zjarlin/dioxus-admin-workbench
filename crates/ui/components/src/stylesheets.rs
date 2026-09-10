@@ -4,6 +4,8 @@ const AGENT_CHAT_STYLESHEET: Asset = asset!("/src/agent_chat/style.css", AssetOp
 const UTILITIES_STYLESHEET: Asset = asset!("/src/utilities.css", AssetOptions::css());
 const THEME_STYLESHEET: Asset = asset!("/src/theme.css", AssetOptions::css());
 const WORKBENCH_STYLESHEET: Asset = asset!("/src/workbench.css", AssetOptions::css());
+const APPLICATION_NAVIGATION_STYLESHEET: Asset =
+    asset!("/src/application_navigation.css", AssetOptions::css());
 const APPLICATION_FULLSCREEN_STYLESHEET: Asset =
     asset!("/src/application_fullscreen.css", AssetOptions::css());
 const BADGE_STYLESHEET: Asset = asset!("/src/badge/style.css", AssetOptions::css());
@@ -28,6 +30,7 @@ pub fn UiStylesheets() -> Element {
         document::Stylesheet { href: UTILITIES_STYLESHEET }
         document::Stylesheet { href: THEME_STYLESHEET }
         document::Stylesheet { href: WORKBENCH_STYLESHEET }
+        document::Stylesheet { href: APPLICATION_NAVIGATION_STYLESHEET }
         document::Stylesheet { href: APPLICATION_FULLSCREEN_STYLESHEET }
         document::Stylesheet { href: BADGE_STYLESHEET }
         document::Stylesheet { href: BUTTON_STYLESHEET }
@@ -83,6 +86,10 @@ mod tests {
         assert!(workbench.contains(".aio-studio-shell"));
         assert!(workbench.contains(".application-shell__account-menu"));
         assert!(workbench.contains("data-sidebar-collapsed"));
+        assert!(
+            include_str!("application_navigation.css")
+                .contains(".application-shell__navigation-group-toggle")
+        );
         assert!(include_str!("utilities.css").contains(".size-4"));
     }
 

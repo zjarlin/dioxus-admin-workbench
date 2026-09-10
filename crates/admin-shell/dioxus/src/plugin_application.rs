@@ -18,7 +18,17 @@ pub fn PluginApplication(
 ) -> Element {
     let mut active_page_id = use_signal(|| None::<String>);
     let mut account_page_id = use_signal(|| None::<String>);
-    let navigation = PluginNavigation::new(&pages, &runtime_pages, &account_items);
+    let navigation = match PluginNavigation::new(&pages, &runtime_pages, &account_items) {
+        Ok(navigation) => navigation,
+        Err(error) => {
+            return rsx! {
+                az_ui_components::UiStylesheets {}
+                section { class: "application-shell__state", role: "alert",
+                    "插件导航无效：{error}"
+                }
+            };
+        }
+    };
     let selected_page = active_page_id();
     let selected_account_page = account_page_id();
     let workspace_page = navigation.workspace_page(selected_page.as_deref());
@@ -30,10 +40,8 @@ pub fn PluginApplication(
         .iter()
         .filter_map(|scene| {
             navigation
-                .menus(Some(&scene.id))
-                .first()
-                .and_then(|menu| menu.page_id.clone())
-                .map(|page_id| (scene.id.clone(), page_id))
+                .first_page_in_scene(&scene.id)
+                .map(|page_id| (scene.id.clone(), page_id.to_owned()))
         })
         .collect::<Vec<_>>();
     let workspace_label = page_label(workspace_page, &pages, &runtime_pages);
