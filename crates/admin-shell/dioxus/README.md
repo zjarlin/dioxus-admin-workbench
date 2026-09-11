@@ -37,6 +37,8 @@ let page = ApplicationPage {
 
 `ApplicationAccountPlugin` 通过 `page_id` 贡献的页面属于账户全屏入口，不进入场景菜单树。此规则同样用于运行时插件及子插件，壳不根据页面名称判断。打开账户页面时后台组件保持挂载，返回后恢复原场景、页面和页面内部状态；退出等无 `page_id` 动作继续交给宿主回调。
 
+`PluginApplication` 懒挂载页面并保留有限实例，默认 `workspace_cache_capacity = 6`、`account_cache_capacity = 2`。切换页面只改变可见性，保持组件、iframe 和 DOM 插入顺序；超过容量淘汰非当前的 LRU 实例。消费方通过 `runtime_page_versions` 提供每页版本或激活代次，描述改变、页面移除或版本改变会销毁旧实例。切换用户/租户时消费方必须重建应用根，不能跨上下文复用页面池。页面容器的 `data-aio-page-active` 标记供宿主向隔离前端通知显隐，壳不读取或管理插件内部状态。
+
 不需要元数据工作台时关闭默认 feature，依赖中不会包含 Provider 注册运行时：
 
 ```toml

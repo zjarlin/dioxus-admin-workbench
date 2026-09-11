@@ -1,8 +1,10 @@
 use dioxus::prelude::*;
+use std::collections::BTreeMap;
 
 use crate::{
-    ApplicationAccountItem, ApplicationFullscreenPage, ApplicationPage, ApplicationRuntimePage,
-    ApplicationShell, ApplicationUser, plugin_navigation::PluginNavigation,
+    ApplicationAccountItem, ApplicationPage, ApplicationRuntimePage, ApplicationShell,
+    ApplicationUser, page_cache::PageSource, page_deck::PageDeck,
+    plugin_navigation::PluginNavigation,
 };
 
 /// 将插件页面编排为场景菜单树与独立账户页面。
@@ -12,9 +14,12 @@ pub fn PluginApplication(
     pages: Vec<ApplicationPage>,
     user: ApplicationUser,
     #[props(default)] runtime_pages: Vec<ApplicationRuntimePage>,
+    #[props(default)] runtime_page_versions: BTreeMap<String, String>,
     #[props(default)] render_runtime_page: Option<Callback<ApplicationRuntimePage, Element>>,
     #[props(default)] account_items: Vec<ApplicationAccountItem>,
     #[props(default)] on_account_action: Option<Callback<String>>,
+    #[props(default = 6)] workspace_cache_capacity: usize,
+    #[props(default = 2)] account_cache_capacity: usize,
 ) -> Element {
     let mut active_page_id = use_signal(|| None::<String>);
     let mut account_page_id = use_signal(|| None::<String>);
@@ -45,10 +50,18 @@ pub fn PluginApplication(
         })
         .collect::<Vec<_>>();
     let workspace_label = page_label(workspace_page, &pages, &runtime_pages);
-    let fullscreen_label = page_label(fullscreen_page, &pages, &runtime_pages);
-    let content = page_content(workspace_page, &pages, &runtime_pages, render_runtime_page);
-    let fullscreen_content =
-        page_content(fullscreen_page, &pages, &runtime_pages, render_runtime_page);
+    let sources = pages
+        .iter()
+        .cloned()
+        .map(PageSource::Native)
+        .chain(runtime_pages.iter().cloned().map(|page| {
+            let version = runtime_page_versions
+                .get(&page.id)
+                .cloned()
+                .unwrap_or_default();
+            PageSource::Runtime(page, version)
+        }))
+        .collect::<Vec<_>>();
     let account_enabled = !account_items.is_empty();
     let account_action_items = account_items.clone();
     let valid_account_pages = account_items
@@ -96,17 +109,18 @@ pub fn PluginApplication(
                 on_select_page: move |page_id: String| active_page_id.set(Some(page_id)),
                 on_account_action: account_action,
                 account_items,
-                {content}
+                PageDeck {
+                    pages: sources.clone(), selected: workspace_page.map(str::to_owned),
+                    active: fullscreen_page.is_none(), capacity: workspace_cache_capacity,
+                    renderer: render_runtime_page,
+                }
             }
         }
-        if let Some(page_id) = fullscreen_page {
-            ApplicationFullscreenPage {
-                key: "{page_id}",
-                application_label,
-                page_label: fullscreen_label,
-                on_back: move |_| account_page_id.set(None),
-                {fullscreen_content}
-            }
+        PageDeck {
+            pages: sources, selected: fullscreen_page.map(str::to_owned),
+            active: fullscreen_page.is_some(), capacity: account_cache_capacity,
+            renderer: render_runtime_page, fullscreen: application_label,
+            on_back: move |_| account_page_id.set(None),
         }
     }
 }
@@ -127,39 +141,4 @@ fn page_label(
                 .map(|page| page.label.clone())
         })
         .unwrap_or_else(|| "暂无页面".to_owned())
-}
-
-fn page_content(
-    selected: Option<&str>,
-    pages: &[ApplicationPage],
-    runtime_pages: &[ApplicationRuntimePage],
-    render_runtime_page: Option<Callback<ApplicationRuntimePage, Element>>,
-) -> Element {
-    if let Some(page) = pages.iter().find(|page| Some(page.id) == selected) {
-        return rsx! { ApplicationPluginPage { key: "{page.id}", render: page.render } };
-    }
-    if let Some(page) = runtime_pages
-        .iter()
-        .find(|page| Some(page.id.as_str()) == selected)
-        && let Some(renderer) = render_runtime_page
-    {
-        return renderer.call(page.clone());
-    }
-    rsx! {}
-}
-
-#[derive(Clone, Props)]
-struct ApplicationPluginPageProps {
-    render: fn() -> Element,
-}
-
-impl PartialEq for ApplicationPluginPageProps {
-    fn eq(&self, other: &Self) -> bool {
-        std::ptr::fn_addr_eq(self.render, other.render)
-    }
-}
-
-#[allow(non_snake_case)]
-fn ApplicationPluginPage(props: ApplicationPluginPageProps) -> Element {
-    (props.render)()
 }
