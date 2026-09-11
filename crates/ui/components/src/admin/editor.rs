@@ -13,6 +13,8 @@ pub fn EditorDialog(
     on_saved: Callback<()>,
     on_close: Callback<()>,
     children: Element,
+    #[props(default = "保存".to_owned())] submit_label: String,
+    #[props(default = "正在保存".to_owned())] pending_label: String,
 ) -> Element {
     let mut busy = use_signal(|| false);
     let mut error = use_signal(|| None::<String>);
@@ -35,7 +37,7 @@ pub fn EditorDialog(
                 if let Some(message) = error() { StatusMessage { error: true, message } }
                 footer { class: "admin-form-footer",
                     Button { r#type: "button", variant: ButtonVariant::Outline, disabled: busy(), onclick: move |_| on_close.call(()), "取消" }
-                    Button { r#type: "submit", disabled: busy(), if busy() { "正在保存" } else { "保存" } }
+                    Button { r#type: "submit", disabled: busy(), if busy() { "{pending_label}" } else { "{submit_label}" } }
                 }
             }
         }

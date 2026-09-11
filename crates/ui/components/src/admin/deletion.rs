@@ -14,6 +14,7 @@ pub fn DeleteRecordsDialog<R: Clone + PartialEq + 'static>(
     delete: Callback<R, AsyncResult<()>>,
     on_close: Callback<()>,
     on_deleted: Callback<usize>,
+    #[props(default = "确认删除".to_owned())] confirm_label: String,
     #[props(default = "所选记录将永久删除，无法撤销。".to_owned())] warning: String,
 ) -> Element {
     let mut pending = use_signal(|| items);
@@ -49,7 +50,7 @@ pub fn DeleteRecordsDialog<R: Clone + PartialEq + 'static>(
                         if failed.is_empty() { on_close.call(()); }
                         else { pending.set(failed); error.set(Some(messages.join("；"))); }
                     });
-                }, Trash2 {} if busy() { "正在删除" } else { "确认删除" } }
+                }, Trash2 {} if busy() { "正在处理" } else { "{confirm_label}" } }
             }
         }
     }

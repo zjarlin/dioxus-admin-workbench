@@ -77,3 +77,7 @@
 .admin-option { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
 .admin-option > span { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
 .admin-option .dx-checkbox { flex-shrink: 0; margin-top: 2px; }
+.admin-auth { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
+.admin-auth-form { width: 100%; max-width: 360px; display: grid; gap: 24px; }
+.admin-auth-form h1 { margin: 0; font-size: 1.5rem; line-height: 2rem; font-weight: 600; }
+.admin-auth-form h2 { margin: 0; font-size: 1rem; font-weight: 500; color: var(--secondary-foreground); }
