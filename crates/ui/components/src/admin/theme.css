@@ -1,0 +1,117 @@
+:root, :root[data-theme="light"] {
+  color-scheme: light;
+  --background: #fafafa;
+  --card: #ffffff;
+  --popover: #ffffff;
+  --muted: #f4f4f5;
+  --foreground: #18181b;
+  --secondary-foreground: #52525b;
+  --muted-foreground: #71717a;
+  --primary: #18181b;
+  --primary-foreground: #ffffff;
+  --border: #e4e4e7;
+  --input: #85858f;
+  --ring: #52525b;
+  --success: #166534;
+  --success-bg: #f0fdf4;
+  --warning: #92400e;
+  --warning-bg: #fffbeb;
+  --destructive: #b91c1c;
+  --destructive-bg: #fef2f2;
+  --info: #1d4ed8;
+  --info-bg: #eff6ff;
+  --font-sans: "Inter", "Noto Sans SC Variable", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+}
+
+:root.dark, :root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #101012;
+  --card: #18181b;
+  --popover: #18181b;
+  --muted: #27272a;
+  --foreground: #fafafa;
+  --secondary-foreground: #d4d4d8;
+  --muted-foreground: #a1a1aa;
+  --primary: #fafafa;
+  --primary-foreground: #18181b;
+  --border: #343438;
+  --input: #71717a;
+  --ring: #d4d4d8;
+  --success: #86efac;
+  --success-bg: #142a20;
+  --warning: #fcd34d;
+  --warning-bg: #302719;
+  --destructive: #fca5a5;
+  --destructive-bg: #321d20;
+  --info: #93c5fd;
+  --info-bg: #1b2538;
+}
+
+:root {
+  --card-foreground: var(--foreground);
+  --popover-foreground: var(--foreground);
+  --primary-color: var(--card);
+  --primary-color-1: var(--background);
+  --primary-color-2: var(--card);
+  --primary-color-3: var(--muted);
+  --primary-color-4: var(--muted);
+  --primary-color-5: var(--muted);
+  --primary-color-6: var(--border);
+  --primary-color-7: var(--input);
+  --secondary-color: var(--foreground);
+  --secondary-color-1: var(--foreground);
+  --secondary-color-2: var(--primary);
+  --secondary-color-3: var(--secondary-foreground);
+  --secondary-color-4: var(--foreground);
+  --secondary-color-5: var(--muted-foreground);
+  --secondary-color-6: var(--input);
+  --focused-border-color: var(--ring);
+  --primary-error-color: var(--destructive);
+  --contrast-error-color: var(--destructive-bg);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+body, :root[data-theme="light"] body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: .875rem;
+  line-height: 1.375rem;
+  letter-spacing: 0;
+}
+
+button, input, select, textarea { font: inherit; letter-spacing: 0; }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.dx-button { border-radius: 6px; cursor: pointer; transition-property: background-color, color; }
+.dx-button[data-style="primary"] { background: var(--primary); color: var(--primary-foreground); }
+.dx-button[data-style="outline"] { border-color: var(--input); box-shadow: none; }
+.dx-button[data-style="destructive"] { background: var(--destructive); color: var(--destructive-bg); }
+.dx-button:focus-visible, .dx-input:focus-visible, .dx-select-trigger:focus-visible {
+  outline: 2px solid var(--ring); outline-offset: 3px; box-shadow: none;
+}
+.dx-input, .dx-textarea { border: 1px solid var(--input); border-radius: 6px; box-shadow: none; min-height: 36px; }
+.dx-input::placeholder { color: var(--muted-foreground); }
+.dx-dialog { font-family: var(--font-sans); text-align: left; border-radius: 8px; }
+.dx-dialog-title { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+.dx-dialog-description { font-size: .875rem; line-height: 1.375rem; color: var(--secondary-foreground); }
+.application-shell { --application-shell-sidebar-width: 15rem; }
+.application-shell__sidebar, .application-shell__topbar { background: var(--card); }
+.application-shell__content, .application-fullscreen__content { padding: 24px; }
+.application-shell__scenes .dx-button { border-radius: 0; border-bottom: 2px solid transparent; background: transparent; }
+.application-shell__scenes .dx-button[aria-pressed="true"] { border-bottom-color: var(--foreground); font-weight: 600; }
+
+@media (max-width: 767px) {
+  .application-shell { --application-shell-sidebar-width: 0; }
+  .application-shell__content, .application-fullscreen__content { padding: 16px; }
+}
+@media (pointer: coarse) {
+  .dx-button, .dx-input, .dx-select-trigger { min-height: 44px; }
+  .dx-button[data-size^="icon"] { min-width: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dx-button, .dx-dialog, .dx-dialog-backdrop, .application-shell { animation: none; transition: none; }
+  .dx-dialog-backdrop[data-state="open"] { opacity: 1; }
+}
+.application-shell__page-title { min-width: 0; font-size: .875rem; font-weight: 500; overflow-wrap: anywhere; }

@@ -27,7 +27,7 @@ pub fn ApplicationFullscreenPage(
                     ArrowLeft { class: "size-4" }
                     span { "返回主后台" }
                 }
-                h1 { "{page_label}" }
+                span { class: "application-shell__page-title", "{page_label}" }
             }
             main { class: "application-fullscreen__content", aria_label: "{page_label}",
                 {children}

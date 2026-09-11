@@ -102,6 +102,10 @@ pub struct DataTableProps<R: Clone + PartialEq + 'static> {
     pub empty_text: String,
     #[props(default)]
     pub class: String,
+    #[props(default)]
+    pub sort_column: Option<String>,
+    #[props(default)]
+    pub sort_descending: bool,
 }
 
 #[component]
@@ -143,12 +147,13 @@ pub fn DataTable<R: Clone + PartialEq + 'static>(props: DataTableProps<R>) -> El
     rsx! {
         div { class: root_class, style: root_style,
             div { class: workspace_class,
-                div { class: TABLE_VIEWPORT_CLASS,
+                div { class: TABLE_VIEWPORT_CLASS, role: "region", aria_label: "{props.aria_label}表格滚动区域", tabindex: "0",
                     table {
                         class: TABLE_CLASS,
                         style: table_style,
                         aria_label: props.aria_label,
                         "data-sticky-header": props.sticky_header.to_string(),
+                        caption { class: "admin-sr-only", "{props.aria_label}" }
                         colgroup {
                             for leaf in &leaves {
                                 col { style: format!("width:{}px;", leaf.column.width) }
@@ -167,6 +172,7 @@ pub fn DataTable<R: Clone + PartialEq + 'static>(props: DataTableProps<R>) -> El
                                             scope: if header.leaf_key.is_some() { "col" } else { "colgroup" },
                                             "data-column-key": header.key.clone(),
                                             "data-header-level": header.level,
+                                            aria_sort: if props.sort_column.as_deref() == Some(header.key.as_str()) { Some(if props.sort_descending { "descending" } else { "ascending" }) } else { None },
                                             {render_header_content(
                                                 header,
                                                 &leaves,

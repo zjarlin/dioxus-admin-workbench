@@ -21,11 +21,17 @@ const NAVIGATION_ICON_STYLESHEET: Asset =
 const SELECT_STYLESHEET: Asset = asset!("/src/select/style.css", AssetOptions::css());
 const SPATIAL_STYLESHEET: Asset = asset!("/src/spatial/style.css", AssetOptions::css());
 const TEXTAREA_STYLESHEET: Asset = asset!("/src/textarea/style.css", AssetOptions::css());
+const ADMIN_THEME_STYLESHEET: Asset = asset!("/src/admin/theme.css", AssetOptions::css());
+const ADMIN_STYLESHEET: Asset = asset!("/src/admin/style.css", AssetOptions::css());
+const ADMIN_FONTS: Asset = asset!("/src/admin/fonts", AssetOptions::folder());
 
 /// 加载后台组件使用的稳定样式资源。
 #[component]
 pub fn UiStylesheets() -> Element {
     rsx! {
+        document::Link { rel: "preload", href: format!("{ADMIN_FONTS}/inter/files/inter-latin-wght-normal.woff2"), r#as: "font", r#type: "font/woff2", crossorigin: "anonymous" }
+        document::Stylesheet { href: format!("{ADMIN_FONTS}/inter.css") }
+        document::Stylesheet { href: format!("{ADMIN_FONTS}/noto/wght.css") }
         document::Stylesheet { href: AGENT_CHAT_STYLESHEET }
         document::Stylesheet { href: UTILITIES_STYLESHEET }
         document::Stylesheet { href: THEME_STYLESHEET }
@@ -43,6 +49,8 @@ pub fn UiStylesheets() -> Element {
         document::Stylesheet { href: SELECT_STYLESHEET }
         document::Stylesheet { href: SPATIAL_STYLESHEET }
         document::Stylesheet { href: TEXTAREA_STYLESHEET }
+        document::Stylesheet { href: ADMIN_THEME_STYLESHEET }
+        document::Stylesheet { href: ADMIN_STYLESHEET }
     }
 }
 

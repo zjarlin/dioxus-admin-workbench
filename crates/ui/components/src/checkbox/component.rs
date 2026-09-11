@@ -2,7 +2,7 @@ use std::{ops::Not, rc::Rc};
 
 use crate::attributes::with_class;
 use dioxus::prelude::*;
-use dioxus_icons::lucide::Check;
+use dioxus_icons::lucide::{Check, Minus};
 
 const CHECKBOX_CLASS: &str = "dx-checkbox";
 const CHECKBOX_INDICATOR_CLASS: &str = "dx-checkbox-indicator";
@@ -142,7 +142,9 @@ fn CheckboxIndicator() -> Element {
             class: CHECKBOX_INDICATOR_CLASS,
             "data-state": checked.data_state(),
             "data-disabled": context.disabled,
-            if bool::from(checked) {
+            if checked == CheckboxState::Indeterminate {
+                Minus { size: "1rem" }
+            } else if bool::from(checked) {
                 Check { size: "1rem" }
             }
         }

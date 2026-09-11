@@ -113,7 +113,7 @@ pub fn ApplicationShell(
                             onclick: move |_| mobile_navigation_open.set(true),
                             PanelLeft { class: "size-4" }
                         }
-                        h1 { "{page_label}" }
+                        span { class: "application-shell__page-title", "{page_label}" }
                     }
                     nav { class: "application-shell__scenes", aria_label: "场景",
                         for scene in scenes {

@@ -45,6 +45,20 @@ pub fn Dialog(props: DialogProps) -> Element {
     let title_id = use_signal(|| unique_id("dialog-title"));
     let description_id = use_signal(|| unique_id("dialog-description"));
     let attributes = with_class(props.attributes, DIALOG_CLASS.to_owned());
+    let mut focus_scope = use_signal(|| None::<document::Eval>);
+    use_effect(move || {
+        if !open() {
+            if let Some(scope) = *focus_scope.peek() {
+                let _ = scope.send(());
+            }
+            focus_scope.set(None);
+        }
+    });
+    use_drop(move || {
+        if let Some(scope) = *focus_scope.peek() {
+            let _ = scope.send(());
+        }
+    });
 
     use_context_provider(|| DialogContext {
         title_id,
@@ -74,11 +88,10 @@ pub fn Dialog(props: DialogProps) -> Element {
                 aria_labelledby: title_id,
                 aria_describedby: description_id,
                 tabindex: "-1",
-                onmounted: move |event| {
-                    let node = event.data();
-                    spawn(async move {
-                        let _ = node.set_focus(true).await;
-                    });
+                onmounted: move |_| {
+                    let scope = document::eval(include_str!("focus.js"));
+                    let _ = scope.send((root_id(), (props.is_modal)()));
+                    focus_scope.set(Some(scope));
                 },
                 onkeydown: move |event| {
                     if event.key() == Key::Escape {
