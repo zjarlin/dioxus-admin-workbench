@@ -31,6 +31,7 @@ const ADMIN_FONTS: Asset = asset!("/src/admin/fonts", AssetOptions::folder());
 #[component]
 pub fn UiStylesheets() -> Element {
     rsx! {
+        document::Stylesheet { href: asset!("/src/markdown/style.css", AssetOptions::css()) }
         document::Link { rel: "preload", href: format!("{ADMIN_FONTS}/inter/files/inter-latin-wght-normal.woff2"), r#as: "font", r#type: "font/woff2", crossorigin: "anonymous" }
         document::Stylesheet { href: format!("{ADMIN_FONTS}/inter.css") }
         document::Stylesheet { href: format!("{ADMIN_FONTS}/noto/wght.css") }

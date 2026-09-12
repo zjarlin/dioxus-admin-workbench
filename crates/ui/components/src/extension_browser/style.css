@@ -34,13 +34,6 @@
 .extension-browser__versions { list-style: none; padding: 0; }
 .extension-browser__versions li { padding: 16px 0; border-bottom: 1px solid #e2e4e8; overflow-wrap: anywhere; }
 .extension-browser__versions pre { overflow: auto; max-height: 240px; white-space: pre-wrap; font-size: 12px; }
-.dx-markdown { max-width: 940px; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
-.dx-markdown h1 { font-size: 24px; }.dx-markdown h2 { font-size: 20px; margin-top: 26px; }.dx-markdown h3 { font-size: 17px; }
-.dx-markdown pre { padding: 14px 16px; border: 1px solid #e0e4e8; border-radius: 4px; background: #f6f8fa; overflow: auto; font-size: 12px; }
-.dx-markdown code { font-family: ui-monospace,monospace; }.dx-markdown :not(pre)>code { padding: 2px 4px; background: #eff1f4; border-radius: 3px; }
-.dx-markdown img { max-width: 100%; height: auto; }.dx-markdown a { color: #2464a1; }
-.dx-markdown table { display: block; overflow-x: auto; border-collapse: collapse; max-width: 100%; }.dx-markdown th,.dx-markdown td { border: 1px solid #dfe3e7; padding: 7px 12px; }
-.dx-markdown blockquote { margin-left: 0; border-left: 3px solid #b7c9d3; padding-left: 16px; color: #56636c; }
 @media(max-width:767px) {
  .extension-browser { display: block; }.extension-browser__sidebar { height: 100%; }.extension-browser__separator { display:none; }
  .extension-browser[data-detail-open=true] .extension-browser__sidebar { display:none; }.extension-browser[data-detail-open=false] .extension-browser__detail { display:none; }
