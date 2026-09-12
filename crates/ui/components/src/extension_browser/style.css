@@ -1,5 +1,6 @@
-.extension-browser { display: grid; grid-template-columns: var(--extension-sidebar-width,300px) 5px minmax(0,1fr); height: calc(100dvh - 68px); min-height: 400px; color: var(--text-color,#202124); background: var(--background-color,#fff); letter-spacing: 0; }
-.extension-browser__sidebar { overflow: auto; min-width: 0; background: var(--sidebar-background,#f7f8fa); padding: 16px 0; }
+.application-fullscreen__content:has(.extension-browser) { padding: 0; overflow: hidden; }
+.extension-browser { display: grid; grid-template-columns: var(--extension-sidebar-width,300px) 5px minmax(0,1fr); height: 100%; min-height: 0; color: var(--foreground,#202124); background: var(--background,#fff); letter-spacing: 0; }
+.extension-browser__sidebar { overflow: auto; min-width: 0; background: var(--muted,#f7f8fa); padding: 16px 0; }
 .extension-browser__separator { cursor: col-resize; touch-action: none; border-inline: 1px solid var(--border-color,#e2e4e8); }
 .extension-browser__separator:hover,.extension-browser__separator:focus-visible { background: #27825f; }
 .extension-browser__detail { overflow: auto; min-width: 0; padding: 28px 36px 48px; }
@@ -28,7 +29,8 @@
 .extension-browser__menu [role=menuitem] { display: flex; gap: 8px; align-items: center; width: 100%; border: 0; background: transparent; padding: 9px; color: #272a30; text-align: left; text-decoration: none; font-size: 13px; cursor: pointer; }
 .extension-browser__menu [role=menuitem]:hover { background: #f1f3f5; }
 .extension-browser__menu svg { width: 16px; height: 16px; }
-.extension-browser__back { display: none; }
+.extension-browser .extension-browser__back { display: none; }
+.extension-browser__search input { width: 100%; }
 .extension-browser__versions { list-style: none; padding: 0; }
 .extension-browser__versions li { padding: 16px 0; border-bottom: 1px solid #e2e4e8; overflow-wrap: anywhere; }
 .extension-browser__versions pre { overflow: auto; max-height: 240px; white-space: pre-wrap; font-size: 12px; }
@@ -42,6 +44,6 @@
 @media(max-width:767px) {
  .extension-browser { display: block; }.extension-browser__sidebar { height: 100%; }.extension-browser__separator { display:none; }
  .extension-browser[data-detail-open=true] .extension-browser__sidebar { display:none; }.extension-browser[data-detail-open=false] .extension-browser__detail { display:none; }
- .extension-browser__detail { padding: 16px 18px 32px; height: 100%; }.extension-browser__back { display: inline-flex; margin-bottom: 18px; }
+ .extension-browser__detail { padding: 16px 18px 32px; height: 100%; }.extension-browser .extension-browser__back { display: inline-flex; margin-bottom: 18px; }
  .extension-browser__heading h1 { font-size: 20px; }.extension-browser__heading > svg { flex-basis: 32px; width: 32px; height: 32px; }
 }
