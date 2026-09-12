@@ -14,6 +14,15 @@
 .extension-browser__item strong { display: block; font-size: 13px; overflow-wrap: anywhere; }
 .extension-browser__item p { margin: 4px 0; font-size: 12px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .extension-browser__item small { font-size: 11px; color: #527063; }
+.extension-browser__row { display: flex; align-items: stretch; min-width: 0; }
+.extension-browser__row > .extension-browser__item { flex: 1; min-width: 0; }
+.extension-browser__children { margin-left: 18px; border-left: 1px solid #d5dce0; }
+.extension-browser__toggle { flex: 0 0 24px; border: 0; padding: 3px; background: transparent; color: inherit; cursor: pointer; }
+.extension-browser__toggle svg { width: 16px; height: 16px; }
+.extension-browser__optional { border-top: 1px solid #d5dce0; padding: 12px 0; }
+.extension-browser__optional h2 { font-size: 14px; margin: 0 0 8px; }
+.extension-browser__child-action { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 6px 0; font-size: 13px; }
+.extension-browser__child-action > strong { flex: 1; overflow-wrap: anywhere; }
 .extension-browser__heading { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 20px; }
 .extension-browser__heading > svg { flex: 0 0 48px; width: 48px; height: 48px; color: #38806b; }
 .extension-browser__heading > div { min-width: 0; overflow-wrap: anywhere; }
