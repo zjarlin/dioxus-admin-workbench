@@ -16,6 +16,7 @@
 .extension-browser__item small { font-size: 11px; color: #527063; }
 .extension-browser__heading { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 20px; }
 .extension-browser__heading > svg { flex: 0 0 48px; width: 48px; height: 48px; color: #38806b; }
+.extension-browser__heading > div { min-width: 0; overflow-wrap: anywhere; }
 .extension-browser__heading h1 { font-size: 24px; margin: 0 0 7px; line-height: 1.3; overflow-wrap: anywhere; }
 .extension-browser__heading p { margin: 6px 0; color: #60656f; font-size: 13px; }
 .extension-browser__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 16px 0 20px; }
