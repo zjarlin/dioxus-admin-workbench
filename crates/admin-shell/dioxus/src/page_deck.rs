@@ -1,6 +1,6 @@
 use crate::{
     ApplicationFullscreenPage, ApplicationRuntimePage,
-    page_cache::{PageCache, PageSource},
+    page_cache::{PageCache, PageScope, PageSource},
 };
 use dioxus::prelude::*;
 use std::{cell::RefCell, rc::Rc};
@@ -11,6 +11,7 @@ pub(super) fn PageDeck(
     selected: Option<String>,
     active: bool,
     capacity: usize,
+    scope: PageScope,
     renderer: Option<Callback<ApplicationRuntimePage, Element>>,
     #[props(default)] fullscreen: Option<String>,
     #[props(default)] on_back: Option<Callback<()>>,
@@ -18,14 +19,17 @@ pub(super) fn PageDeck(
     let cache = use_hook(|| Rc::new(RefCell::new(PageCache::default())));
     let entries = cache
         .borrow_mut()
-        .reconcile(&pages, selected.as_deref(), capacity);
+        .reconcile(&pages, selected.as_deref(), capacity, &scope);
     rsx! {
         for entry in entries {
             div {
                 key: "{entry.serial}",
-                hidden: selected.as_deref() != Some(entry.source.id()),
+                hidden: entry.scope != scope || selected.as_deref() != Some(entry.source.id()),
                 "data-aio-page": entry.source.id(),
-                "data-aio-page-active": (active && selected.as_deref() == Some(entry.source.id())).to_string(),
+                "data-aio-workspace": entry.scope.id.clone(),
+                "data-aio-workspace-context": entry.scope.version.clone(),
+                "data-aio-workspace-active": (entry.scope == scope).to_string(),
+                "data-aio-page-active": (entry.scope == scope && active && selected.as_deref() == Some(entry.source.id())).to_string(),
                 if let Some(label) = fullscreen.as_ref() {
                     ApplicationFullscreenPage {
                         application_label: label.clone(),

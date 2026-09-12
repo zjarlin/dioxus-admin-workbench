@@ -37,7 +37,11 @@ let page = ApplicationPage {
 
 `ApplicationAccountPlugin` 通过 `page_id` 贡献的页面属于账户全屏入口，不进入场景菜单树。此规则同样用于运行时插件及子插件，壳不根据页面名称判断。打开账户页面时后台组件保持挂载，返回后恢复原场景、页面和页面内部状态；退出等无 `page_id` 动作继续交给宿主回调。
 
-`PluginApplication` 懒挂载页面并保留有限实例，默认 `workspace_cache_capacity = 6`、`account_cache_capacity = 2`。切换页面只改变可见性，保持组件、iframe 和 DOM 插入顺序；超过容量淘汰非当前的 LRU 实例。消费方通过 `runtime_page_versions` 提供每页版本或激活代次，描述改变、页面移除或版本改变会销毁旧实例。切换用户/租户时消费方必须重建应用根，不能跨上下文复用页面池。页面容器的 `data-aio-page-active` 标记供宿主向隔离前端通知显隐，壳不读取或管理插件内部状态。
+`PluginApplication` 懒挂载页面并保留有限实例，默认 `workspace_cache_capacity = 6`、`account_cache_capacity = 2`，容量跨所有工作区计算。切换页面只改变可见性，保持组件、iframe 和 DOM 插入顺序；超过容量淘汰非当前的 LRU 实例。消费方通过 `runtime_page_versions` 提供每页版本或激活代次，描述改变、页面移除或版本改变会销毁旧实例。
+
+登录会话变化时消费方必须重建应用根；同一登录会话的租户/工作区切换则传入 `workspace_id` 和 `workspace_context`（租户、用户及权限摘要），不重建根。运行时页面按工作区分别保存实例与当前导航，A/B/A 可恢复 A 的内存状态，返回时按最新目录、上下文摘要和版本重新校验；原生页面因读取宿主当前上下文，离开工作区即销毁。账户全屏入口在换工作区时关闭。
+
+容器提供 `data-aio-page-active`、`data-aio-workspace-active`、`data-aio-workspace` 和 `data-aio-workspace-context`。宿主必须在工作区离开时阻止后台服务调用并撤销票据，返回后重新鉴权，仅页面状态可保留；这些 DOM 标记不是服务端授权依据。壳不读取或管理插件内部状态，也不承诺完整刷新后保留内存。
 
 不需要元数据工作台时关闭默认 feature，依赖中不会包含 Provider 注册运行时：
 
