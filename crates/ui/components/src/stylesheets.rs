@@ -1,6 +1,8 @@
 use dioxus::prelude::*;
 
 const AGENT_CHAT_STYLESHEET: Asset = asset!("/src/agent_chat/style.css", AssetOptions::css());
+const EXTENSION_BROWSER_STYLESHEET: Asset =
+    asset!("/src/extension_browser/style.css", AssetOptions::css());
 const UTILITIES_STYLESHEET: Asset = asset!("/src/utilities.css", AssetOptions::css());
 const THEME_STYLESHEET: Asset = asset!("/src/theme.css", AssetOptions::css());
 const WORKBENCH_STYLESHEET: Asset = asset!("/src/workbench.css", AssetOptions::css());
@@ -33,6 +35,7 @@ pub fn UiStylesheets() -> Element {
         document::Stylesheet { href: format!("{ADMIN_FONTS}/inter.css") }
         document::Stylesheet { href: format!("{ADMIN_FONTS}/noto/wght.css") }
         document::Stylesheet { href: AGENT_CHAT_STYLESHEET }
+        document::Stylesheet { href: EXTENSION_BROWSER_STYLESHEET }
         document::Stylesheet { href: UTILITIES_STYLESHEET }
         document::Stylesheet { href: THEME_STYLESHEET }
         document::Stylesheet { href: WORKBENCH_STYLESHEET }

@@ -14,6 +14,8 @@ categories = ["gui", "wasm", "web-programming"]
 workspace = "../../.."
 
 [dependencies]
+pulldown-cmark = { version = "0.13", default-features = false, features = ["html"] }
+url = "2.5"
 dioxus = { workspace = true, features = ["hooks", "asset", "document", "mounted"] }
 dioxus-icons = { version = "0.1.0", default-features = false }
 manganis.workspace = true
