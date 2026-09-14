@@ -17,6 +17,7 @@ pub fn PluginApplication(
     user: ApplicationUser,
     #[props(default)] runtime_pages: Vec<ApplicationRuntimePage>,
     #[props(default)] runtime_page_versions: BTreeMap<String, String>,
+    #[props(default)] prepared_pages: Vec<String>,
     #[props(default)] workspace_id: String,
     #[props(default)] workspace_context: String,
     #[props(default)] render_runtime_page: Option<Callback<ApplicationRuntimePage, Element>>,
@@ -129,6 +130,7 @@ pub fn PluginApplication(
                     active: fullscreen_page.is_none(), capacity: workspace_cache_capacity,
                     scope: scope.clone(),
                     renderer: render_runtime_page,
+                    prepared_pages,
                 }
             }
         }

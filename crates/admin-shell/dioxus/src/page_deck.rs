@@ -13,18 +13,25 @@ pub(super) fn PageDeck(
     capacity: usize,
     scope: PageScope,
     renderer: Option<Callback<ApplicationRuntimePage, Element>>,
+    #[props(default)] prepared_pages: Vec<String>,
     #[props(default)] fullscreen: Option<String>,
     #[props(default)] on_back: Option<Callback<()>>,
 ) -> Element {
     let cache = use_hook(|| Rc::new(RefCell::new(PageCache::default())));
-    let entries = cache
-        .borrow_mut()
-        .reconcile(&pages, selected.as_deref(), capacity, &scope);
+    let entries = {
+        let mut cache = cache.borrow_mut();
+        cache.reconcile(&pages, selected.as_deref(), capacity, &scope);
+        cache.prepare(&pages, &prepared_pages, capacity, &scope)
+    };
     rsx! {
         for entry in entries {
             div {
                 key: "{entry.serial}",
-                hidden: entry.scope != scope || selected.as_deref() != Some(entry.source.id()),
+                hidden: entry.scope != scope || (!entry.preparing && selected.as_deref() != Some(entry.source.id())),
+                class: if entry.preparing { "application-page--preparing" } else { "" },
+                inert: entry.preparing,
+                aria_hidden: entry.preparing.to_string(),
+                "data-aio-page-preparing": entry.preparing.to_string(),
                 "data-aio-page": entry.source.id(),
                 "data-aio-workspace": entry.scope.id.clone(),
                 "data-aio-workspace-context": entry.scope.version.clone(),

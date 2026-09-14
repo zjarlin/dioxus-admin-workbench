@@ -28,6 +28,7 @@ pub(super) struct PageInstance {
     pub source: PageSource,
     pub scope: PageScope,
     used: u64,
+    pub preparing: bool,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -40,9 +41,54 @@ pub(super) struct PageScope {
 pub(super) struct PageCache {
     entries: Vec<PageInstance>,
     clock: u64,
+    prepared: Vec<(PageScope, PageSource)>,
 }
 
 impl PageCache {
+    pub fn prepare(
+        &mut self,
+        available: &[PageSource],
+        ids: &[String],
+        capacity: usize,
+        scope: &PageScope,
+    ) -> Vec<PageInstance> {
+        self.entries.retain(|entry| {
+            !entry.preparing
+                || (entry.scope == *scope && ids.iter().any(|id| id == entry.source.id()))
+        });
+        self.prepared
+            .retain(|(previous, source)| previous == scope && available.contains(source));
+        for id in ids {
+            let Some(source @ PageSource::Runtime(..)) =
+                available.iter().find(|page| page.id() == id)
+            else {
+                continue;
+            };
+            if self
+                .entries
+                .iter()
+                .any(|entry| entry.scope == *scope && entry.source == *source)
+                || self
+                    .prepared
+                    .iter()
+                    .any(|(previous, page)| previous == scope && page == source)
+                || self.entries.len() >= capacity.max(1)
+            {
+                continue;
+            }
+            self.clock += 1;
+            self.prepared.push((scope.clone(), source.clone()));
+            self.entries.push(PageInstance {
+                serial: self.clock,
+                source: source.clone(),
+                scope: scope.clone(),
+                used: 0,
+                preparing: true,
+            });
+        }
+        self.entries.clone()
+    }
+
     pub fn reconcile(
         &mut self,
         available: &[PageSource],
@@ -55,7 +101,7 @@ impl PageCache {
                 entry.scope == *scope && available.contains(&entry.source)
             } else {
                 // 原生业务页仍读取宿主当前上下文，不能跨租户保留其请求和状态。
-                matches!(entry.source, PageSource::Runtime(..))
+                !entry.preparing && matches!(entry.source, PageSource::Runtime(..))
             }
         });
         self.clock += 1;
@@ -66,12 +112,14 @@ impl PageCache {
                 .find(|entry| entry.scope == *scope && entry.source == *source)
             {
                 entry.used = self.clock;
+                entry.preparing = false;
             } else {
                 self.entries.push(PageInstance {
                     serial: self.clock,
                     source: source.clone(),
                     scope: scope.clone(),
                     used: self.clock,
+                    preparing: false,
                 });
             }
         }
@@ -125,6 +173,56 @@ mod tests {
         assert_eq!(
             restored.iter().map(|p| p.source.id()).collect::<Vec<_>>(),
             ["a", "b"]
+        );
+    }
+
+    #[test]
+    fn prepared_pages_activate_in_place_and_do_not_displace_visited_pages() {
+        let mut cache = PageCache::default();
+        let scope = PageScope::default();
+        let pages = vec![page("a", "1"), page("b", "1"), page("c", "1")];
+        cache.reconcile(&pages, Some("a"), 2, &scope);
+        let entries = cache.prepare(&pages, &["b".into(), "c".into()], 2, &scope);
+        assert_eq!(entries.len(), 2);
+        assert!(entries[1].preparing);
+        let serial = entries[1].serial;
+        let opened = cache.reconcile(&pages, Some("b"), 2, &scope);
+        assert_eq!(opened[1].serial, serial);
+        assert!(!opened[1].preparing);
+        cache.reconcile(&pages, Some("c"), 2, &scope);
+        cache.reconcile(&pages, Some("a"), 2, &scope);
+        assert!(
+            !cache
+                .prepare(&pages, &["b".into()], 2, &scope)
+                .iter()
+                .any(|entry| entry.source.id() == "b")
+        );
+    }
+
+    #[test]
+    fn unused_preparations_are_removed_on_scope_permission_and_version_changes() {
+        let mut cache = PageCache::default();
+        let scope = PageScope::default();
+        let pages = vec![page("a", "1"), page("b", "1")];
+        cache.reconcile(&pages, Some("a"), 3, &scope);
+        let old = cache.prepare(&pages, &["b".into()], 3, &scope)[1].serial;
+        let pages = vec![page("a", "1"), page("b", "2")];
+        cache.reconcile(&pages, Some("a"), 3, &scope);
+        assert_ne!(
+            cache.prepare(&pages, &["b".into()], 3, &scope)[1].serial,
+            old
+        );
+        assert_eq!(cache.prepare(&pages, &[], 3, &scope).len(), 1);
+        let other = PageScope {
+            id: "other".into(),
+            version: "other".into(),
+        };
+        cache.reconcile(&pages, Some("a"), 3, &other);
+        assert!(
+            cache
+                .prepare(&pages, &[], 3, &other)
+                .iter()
+                .all(|entry| !entry.preparing)
         );
     }
 
