@@ -1,17 +1,19 @@
 :root, :root[data-theme="light"] {
   color-scheme: light;
-  --background: #fafafa;
+  --background: #f5f7f8;
   --card: #ffffff;
   --popover: #ffffff;
   --muted: #f4f4f5;
   --foreground: #18181b;
   --secondary-foreground: #52525b;
   --muted-foreground: #71717a;
-  --primary: #18181b;
+  --primary: #137c70;
+  --accent: #e5f2ef;
+  --accent-foreground: #11665c;
   --primary-foreground: #ffffff;
   --border: #e4e4e7;
-  --input: #85858f;
-  --ring: #52525b;
+  --input: #c4ced2;
+  --ring: #137c70;
   --success: #166534;
   --success-bg: #f0fdf4;
   --warning: #92400e;
@@ -26,18 +28,20 @@
 
 :root.dark, :root[data-theme="dark"] {
   color-scheme: dark;
-  --background: #101012;
-  --card: #18181b;
-  --popover: #18181b;
+  --background: #11191c;
+  --card: #192327;
+  --popover: #192327;
   --muted: #27272a;
   --foreground: #fafafa;
   --secondary-foreground: #d4d4d8;
   --muted-foreground: #a1a1aa;
-  --primary: #fafafa;
-  --primary-foreground: #18181b;
+  --primary: #67d5bf;
+  --primary-foreground: #0c3029;
+  --accent: #203d36;
+  --accent-foreground: #91e4d2;
   --border: #343438;
   --input: #71717a;
-  --ring: #d4d4d8;
+  --ring: #67d5bf;
   --success: #86efac;
   --success-bg: #142a20;
   --warning: #fcd34d;
@@ -119,3 +123,31 @@ button, input, select, textarea { font: inherit; letter-spacing: 0; }
   .dx-dialog-backdrop[data-state="open"] { opacity: 1; }
 }
 .application-shell__page-title { min-width: 0; font-size: .875rem; font-weight: 500; overflow-wrap: anywhere; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+  color-scheme: dark;
+  --background: #11191c;
+  --card: #192327;
+  --popover: #192327;
+  --muted: #27272a;
+  --foreground: #fafafa;
+  --secondary-foreground: #d4d4d8;
+  --muted-foreground: #a1a1aa;
+  --primary: #67d5bf;
+  --primary-foreground: #0c3029;
+  --accent: #203d36;
+  --accent-foreground: #91e4d2;
+  --border: #343438;
+  --input: #71717a;
+  --ring: #67d5bf;
+  --success: #86efac;
+  --success-bg: #142a20;
+  --warning: #fcd34d;
+  --warning-bg: #302719;
+  --destructive: #fca5a5;
+  --destructive-bg: #321d20;
+  --info: #93c5fd;
+  --info-bg: #1b2538;
+  }
+}

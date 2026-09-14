@@ -31,6 +31,15 @@ pub fn StatusMessage(message: String, #[props(default)] error: bool) -> Element 
 }
 
 #[component]
+pub fn EmptyState(title: String, #[props(default)] detail: String, children: Element) -> Element {
+    rsx! { div { class: "admin-empty-state", role: "status",
+        h2 { "{title}" }
+        if !detail.is_empty() { p { "{detail}" } }
+        {children}
+    } }
+}
+
+#[component]
 pub fn RequestState(
     #[props(default)] error: Option<String>,
     #[props(default)] on_retry: Option<Callback<()>>,

@@ -55,6 +55,7 @@ pub fn UiStylesheets() -> Element {
         document::Stylesheet { href: TEXTAREA_STYLESHEET }
         document::Stylesheet { href: ADMIN_THEME_STYLESHEET }
         document::Stylesheet { href: ADMIN_STYLESHEET }
+        document::Stylesheet { href: asset!("/src/appearance/style.css", AssetOptions::css()) }
     }
 }
 

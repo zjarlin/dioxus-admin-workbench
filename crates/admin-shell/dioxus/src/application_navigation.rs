@@ -7,6 +7,23 @@ use icons::{ChevronRight, Trash2};
 
 use crate::ApplicationMenuItem;
 
+pub(crate) fn active_path(menus: &[ApplicationMenuItem], page_id: Option<&str>) -> Vec<String> {
+    let Some(page_id) = page_id else {
+        return Vec::new();
+    };
+    for menu in menus.iter().filter(|menu| menu.enabled) {
+        if menu.page_id.as_deref() == Some(page_id) {
+            return vec![menu.label.clone()];
+        }
+        let mut children = active_path(&menu.children, Some(page_id));
+        if !children.is_empty() {
+            children.insert(0, menu.label.clone());
+            return children;
+        }
+    }
+    Vec::new()
+}
+
 #[component]
 pub(crate) fn ApplicationNavigation(
     menus: Vec<ApplicationMenuItem>,
@@ -39,6 +56,9 @@ fn ApplicationNavigationItem(
     on_delete_menu: Option<Callback<String>>,
 ) -> Element {
     let page_id = menu.page_id.clone();
+    let active_branch =
+        !active_path(std::slice::from_ref(&menu), active_page_id.as_deref()).is_empty();
+    let active_leaf = page_id.is_some() && page_id == active_page_id;
     let menu_id = menu.id.clone();
     let delete_label = format!("删除菜单 {}", menu.label);
     let icon = resolved_navigation_icon(menu.icon.as_deref(), &menu.label).to_owned();
@@ -51,6 +71,7 @@ fn ApplicationNavigationItem(
     let mut expanded = use_signal(|| true);
     rsx! {
         section {
+            "data-active": active_branch,
             class: if is_group {
                 "application-shell__navigation-group"
             } else {
@@ -68,6 +89,7 @@ fn ApplicationNavigationItem(
                         },
                         title: menu.label.clone(),
                         aria_label: menu.label.clone(),
+                        aria_current: if active_leaf { "page" } else { "false" },
                         onclick: move |_| on_select_page.call(page_id.clone()),
                         span { class: "application-shell__navigation-icon", aria_hidden: "true",
                             NavigationIcon { name: icon, class: "size-4".to_owned() }

@@ -4,6 +4,9 @@
 
 ## 组件
 
+- `appearance`：用 `AppearanceScope { key: "{user_key}", user_key, ... }` 包住工作台；未登录使用空键。`AppearanceSettings` 在作用域内提供主题、密度选择，按当前设备与账户保存，自动监听系统主题。偏好模型在无 UI 依赖的 core。
+- `admin`：`PageSurface`、`PageHeader`、`RequestState`、`EmptyState` 和 `StatusMessage` 统一页面与异步反馈。主题使用青绿色主色，舒适/紧凑密度由共享 CSS 变量控制。
+
 - `badge`、`button`、`checkbox`、`dialog`、`input`、`select`、`textarea`：固定 registry 源码组件。
 - `data_table`：支持树形表头、固定列、合并单元格、编辑器和右侧面板的通用数据表格。
 - `collection_tree`：以同一套选择、展开和行渲染契约展示扁平集合或层级树。

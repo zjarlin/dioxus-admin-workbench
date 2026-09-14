@@ -189,10 +189,12 @@ dependencies = [
 name = "az-ui-components"
 version = "2026.8.17"
 dependencies = [
+ "az-admin-shell-core",
  "dioxus",
  "dioxus-icons",
  "manganis",
  "pulldown-cmark",
+ "serde_json",
  "url",
 ]
 
