@@ -28,7 +28,7 @@ pub(super) fn PageDeck(
             div {
                 key: "{entry.serial}",
                 hidden: entry.scope != scope || (!entry.preparing && selected.as_deref() != Some(entry.source.id())),
-                class: if entry.preparing { "application-page--preparing" } else { "" },
+                class: if entry.preparing { "application-page application-page--preparing" } else { "application-page" },
                 inert: entry.preparing.then_some(""),
                 aria_hidden: entry.preparing.to_string(),
                 "data-aio-page-preparing": entry.preparing.to_string(),

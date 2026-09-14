@@ -43,6 +43,8 @@ let page = ApplicationPage {
 
 容器提供 `data-aio-page-active`、`data-aio-workspace-active`、`data-aio-workspace` 和 `data-aio-workspace-context`。宿主必须在工作区离开时阻止后台服务调用并撤销票据，返回后重新鉴权，仅页面状态可保留；这些 DOM 标记不是服务端授权依据。壳不读取或管理插件内部状态，也不承诺完整刷新后保留内存。
 
+页面容器的 `.application-page` 继承内容区可用高度，前端插件 iframe 消费共享 `.application-frontend` 样式铺满容器，不设置固定像素高度。插件负责其内部滚动和弹窗布局；壳仍负责原生长页面滚动及桌面、移动端外边距。
+
 不需要元数据工作台时关闭默认 feature，依赖中不会包含 Provider 注册运行时：
 
 ```toml
