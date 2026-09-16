@@ -1,4 +1,14 @@
-.workbench-settings { width: 100%; max-width: 960px; margin-inline: auto; }
+.workbench-settings { width: 100%; max-width: 1120px; margin-inline: auto; }
+.workbench-settings__layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 24px; align-items: start; }
+.workbench-settings__navigation { display: grid; gap: 4px; min-width: 0; }
+.workbench-settings__navigation .dx-button { justify-content: flex-start; text-align: left; height: auto; padding: 10px 12px; white-space: normal; }
+.workbench-settings__navigation .dx-button[aria-pressed="true"] { background: var(--accent); color: var(--accent-foreground); }
+.workbench-settings__navigation-label { display: grid; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
+.workbench-settings__source { display: block; font-size: 12px; line-height: 1.5; font-weight: 400; color: var(--muted-foreground); }
+.workbench-settings__navigation-heading { padding: 16px 12px 4px; font-size: 12px; color: var(--muted-foreground); }
+.workbench-settings__content { min-width: 0; }
+.workbench-settings__plugin .application-frontend { width: 100%; height: clamp(440px, calc(100dvh - 300px), 680px); min-height: 0; border: 0; }
+.workbench-settings__plugin > header { display: grid; gap: 6px; }
 .workbench-settings__section { display: grid; gap: 24px; padding: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; min-width: 0; }
 .workbench-settings__section h2 { margin: 0; font-size: 17px; font-weight: 600; }
 .workbench-settings__section p { margin: 8px 0 0; color: var(--secondary-foreground); }
@@ -32,6 +42,11 @@
 .application-shell__topbar { gap: 16px; }
 .application-shell__page-heading { max-width: 45%; }
 @media (max-width: 767px) {
+  .workbench-settings__layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .workbench-settings__navigation { display: flex; overflow-x: auto; align-items: stretch; padding-bottom: 4px; }
+  .workbench-settings__navigation .dx-button { flex-shrink: 0; }
+  .workbench-settings__navigation-heading { align-self: center; padding: 0 8px; white-space: nowrap; }
+  .workbench-settings__plugin .application-frontend { height: 530px; }
   .workbench-settings__section { padding: 20px 16px; gap: 20px; }
   .admin-auth { padding: 16px; }
   .admin-auth-form { padding: 24px; }

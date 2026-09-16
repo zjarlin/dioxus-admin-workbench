@@ -5,6 +5,7 @@ mod application_account;
 mod application_fullscreen;
 mod application_navigation;
 mod application_plugin;
+mod application_settings;
 mod application_shell;
 mod application_shell_model;
 mod navigation_validation;
@@ -32,6 +33,7 @@ mod workbench;
 
 pub use application_fullscreen::ApplicationFullscreenPage;
 pub use application_plugin::*;
+pub use application_settings::{ApplicationSettings, ApplicationSettingsGroup};
 pub use application_shell::ApplicationShell;
 pub use application_shell_model::*;
 #[cfg(feature = "workbench")]
