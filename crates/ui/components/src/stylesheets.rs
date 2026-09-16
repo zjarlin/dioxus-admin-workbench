@@ -36,6 +36,7 @@ pub fn UiStylesheets() -> Element {
         document::Stylesheet { href: format!("{ADMIN_FONTS}/inter.css") }
         document::Stylesheet { href: format!("{ADMIN_FONTS}/noto/wght.css") }
         document::Stylesheet { href: AGENT_CHAT_STYLESHEET }
+        document::Stylesheet { href: asset!("/src/conversation/style.css", AssetOptions::css()) }
         document::Stylesheet { href: EXTENSION_BROWSER_STYLESHEET }
         document::Stylesheet { href: UTILITIES_STYLESHEET }
         document::Stylesheet { href: THEME_STYLESHEET }
