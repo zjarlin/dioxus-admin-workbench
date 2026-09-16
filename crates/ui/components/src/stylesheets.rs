@@ -29,34 +29,41 @@ const ADMIN_FONTS: Asset = asset!("/src/admin/fonts", AssetOptions::folder());
 
 /// 加载后台组件使用的稳定样式资源。
 #[component]
-pub fn UiStylesheets() -> Element {
+pub fn UiStylesheets(#[props(default)] relative_paths: bool) -> Element {
+    let href = |asset: String| {
+        if relative_paths {
+            asset.trim_start_matches('/').to_owned()
+        } else {
+            asset
+        }
+    };
     rsx! {
-        document::Stylesheet { href: asset!("/src/markdown/style.css", AssetOptions::css()) }
-        document::Link { rel: "preload", href: format!("{ADMIN_FONTS}/inter/files/inter-latin-wght-normal.woff2"), r#as: "font", r#type: "font/woff2", crossorigin: "anonymous" }
-        document::Stylesheet { href: format!("{ADMIN_FONTS}/inter.css") }
-        document::Stylesheet { href: format!("{ADMIN_FONTS}/noto/wght.css") }
-        document::Stylesheet { href: AGENT_CHAT_STYLESHEET }
-        document::Stylesheet { href: asset!("/src/conversation/style.css", AssetOptions::css()) }
-        document::Stylesheet { href: EXTENSION_BROWSER_STYLESHEET }
-        document::Stylesheet { href: UTILITIES_STYLESHEET }
-        document::Stylesheet { href: THEME_STYLESHEET }
-        document::Stylesheet { href: WORKBENCH_STYLESHEET }
-        document::Stylesheet { href: APPLICATION_NAVIGATION_STYLESHEET }
-        document::Stylesheet { href: APPLICATION_FULLSCREEN_STYLESHEET }
-        document::Stylesheet { href: BADGE_STYLESHEET }
-        document::Stylesheet { href: BUTTON_STYLESHEET }
-        document::Stylesheet { href: CHECKBOX_STYLESHEET }
-        document::Stylesheet { href: COLLECTION_TREE_STYLESHEET }
-        document::Stylesheet { href: DATA_TABLE_STYLESHEET }
-        document::Stylesheet { href: DIALOG_STYLESHEET }
-        document::Stylesheet { href: INPUT_STYLESHEET }
-        document::Stylesheet { href: NAVIGATION_ICON_STYLESHEET }
-        document::Stylesheet { href: SELECT_STYLESHEET }
-        document::Stylesheet { href: SPATIAL_STYLESHEET }
-        document::Stylesheet { href: TEXTAREA_STYLESHEET }
-        document::Stylesheet { href: ADMIN_THEME_STYLESHEET }
-        document::Stylesheet { href: ADMIN_STYLESHEET }
-        document::Stylesheet { href: asset!("/src/appearance/style.css", AssetOptions::css()) }
+        document::Stylesheet { href: href(asset!("/src/markdown/style.css", AssetOptions::css()).to_string()) }
+        document::Link { rel: "preload", href: href(format!("{ADMIN_FONTS}/inter/files/inter-latin-wght-normal.woff2")), r#as: "font", r#type: "font/woff2", crossorigin: "anonymous" }
+        document::Stylesheet { href: href(format!("{ADMIN_FONTS}/inter.css")) }
+        document::Stylesheet { href: href(format!("{ADMIN_FONTS}/noto/wght.css")) }
+        document::Stylesheet { href: href(AGENT_CHAT_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(asset!("/src/conversation/style.css", AssetOptions::css()).to_string()) }
+        document::Stylesheet { href: href(EXTENSION_BROWSER_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(UTILITIES_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(THEME_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(WORKBENCH_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(APPLICATION_NAVIGATION_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(APPLICATION_FULLSCREEN_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(BADGE_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(BUTTON_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(CHECKBOX_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(COLLECTION_TREE_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(DATA_TABLE_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(DIALOG_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(INPUT_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(NAVIGATION_ICON_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(SELECT_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(SPATIAL_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(TEXTAREA_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(ADMIN_THEME_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(ADMIN_STYLESHEET.to_string()) }
+        document::Stylesheet { href: href(asset!("/src/appearance/style.css", AssetOptions::css()).to_string()) }
     }
 }
 
