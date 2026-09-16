@@ -10,6 +10,7 @@ pub struct ApplicationSettingsGroup {
 /// 宿主提供给设置中心的扩展槽；页面挂载与授权仍由宿主执行。
 #[derive(Clone, Copy)]
 pub struct ApplicationSettings {
+    pub selected: Signal<Option<String>>,
     pub groups: ReadSignal<Vec<ApplicationSettingsGroup>>,
     pub render: Callback<String, Element>,
 }

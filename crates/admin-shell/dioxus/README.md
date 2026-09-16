@@ -55,4 +55,4 @@ az-dioxus-admin-shell = { version = "2026.8.17", default-features = false }
 需要场景、菜单和页面元数据编辑能力时启用默认的 `workbench` feature，并由消费方实现、注册一个 `AdminProvider`，然后启动 `az_dioxus_admin_shell::App`。CRUD 由 `az-dioxus-admin-extension-crud` 独立提供，完整示例位于仓库 `examples/web`。
 # 设置中心扩展
 
-宿主在设置中心外提供 `ApplicationSettings` 上下文。`groups` 是当前已授权的 `ApplicationSettingsGroup` 响应式列表；`render.call(page_id)` 挂载选中分组。设置中心只负责选择与展示，宿主负责版本、用户和租户隔离。只挂载选中项，卸载或撤权后由列表更新移除入口。
+宿主在设置中心外提供 `ApplicationSettings` 上下文。`selected` 在宿主范围保存当前分组，避免目录刷新导致原生设置页面重建时丢失选择；`groups` 是当前已授权的 `ApplicationSettingsGroup` 响应式列表；`render.call(page_id)` 挂载选中分组。设置中心只负责选择与展示，宿主负责版本、用户和租户隔离。只挂载选中项，卸载或撤权后由列表更新移除入口。
