@@ -9,7 +9,7 @@ use dill::{AllOf, Catalog};
 use dioxus::prelude::Element;
 
 use crate::{
-    ApplicationAccountItem, ApplicationMenuGroup,
+    ApplicationAccountItem, ApplicationMenuGroup, ApplicationTopbarItem,
     navigation_validation::{NavigationContribution, validate_navigation_contributions},
 };
 
@@ -52,6 +52,11 @@ pub trait ApplicationPlugin: Any + Send + Sync {
 /// 账户插件向左下角账户区贡献动作或页面。
 pub trait ApplicationAccountPlugin: Any + Send + Sync {
     fn items(&self) -> Vec<ApplicationAccountItem>;
+}
+
+/// 顶栏资源插件向应用右上角贡献通用下拉入口。
+pub trait ApplicationTopbarPlugin: Any + Send + Sync {
+    fn items(&self) -> Vec<ApplicationTopbarItem>;
 }
 
 pub type DynApplicationPlugin = Arc<dyn ApplicationPlugin>;
@@ -98,6 +103,56 @@ pub fn collect_application_account_items(catalog: &Catalog) -> Result<Vec<Applic
                 "账户动作权限不能为空字符串"
             );
             ensure!(ids.insert(item.id.clone()), "账户动作 id 重复: {}", item.id);
+            items.push(item);
+        }
+    }
+    Ok(items)
+}
+
+/// 从 Dill 聚合顶栏资源插件，身份和展示项都要求稳定且唯一。
+pub fn collect_application_topbar_items(catalog: &Catalog) -> Result<Vec<ApplicationTopbarItem>> {
+    let plugins = catalog
+        .get::<AllOf<dyn ApplicationTopbarPlugin>>()
+        .context("从 Dill 聚合顶栏资源插件失败")?;
+    let mut plugin_types = HashSet::<TypeId>::new();
+    let mut item_ids = HashSet::<String>::new();
+    let mut items = Vec::new();
+
+    for plugin in plugins {
+        let plugin_type = plugin.as_ref().type_id();
+        ensure!(
+            plugin_types.insert(plugin_type),
+            "同一顶栏资源插件类型被重复注册: {plugin_type:?}"
+        );
+        for item in plugin.items() {
+            ensure!(!item.id.trim().is_empty(), "顶栏资源 id 不能为空");
+            ensure!(!item.label.trim().is_empty(), "顶栏资源标题不能为空");
+            ensure!(
+                item_ids.insert(item.id.clone()),
+                "顶栏资源 id 重复: {}",
+                item.id
+            );
+            let mut group_ids = HashSet::<String>::new();
+            for group in &item.groups {
+                ensure!(!group.id.trim().is_empty(), "顶栏资源分组 id 不能为空");
+                ensure!(!group.label.trim().is_empty(), "顶栏资源分组标题不能为空");
+                ensure!(
+                    group_ids.insert(group.id.clone()),
+                    "顶栏资源分组 id 重复: {}",
+                    group.id
+                );
+                let mut link_ids = HashSet::<String>::new();
+                for link in &group.links {
+                    ensure!(!link.id.trim().is_empty(), "顶栏资源链接 id 不能为空");
+                    ensure!(!link.label.trim().is_empty(), "顶栏资源链接标题不能为空");
+                    ensure!(!link.href.trim().is_empty(), "顶栏资源链接地址不能为空");
+                    ensure!(
+                        link_ids.insert(link.id.clone()),
+                        "顶栏资源链接 id 重复: {}",
+                        link.id
+                    );
+                }
+            }
             items.push(item);
         }
     }

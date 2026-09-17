@@ -5,11 +5,12 @@ use az_ui_components::{
     dialog::{Dialog, DialogTitle},
 };
 use dioxus::prelude::*;
-use icons::{PanelLeft, Pencil, Plus, Settings, Trash2, X};
+use icons::{Github, PanelLeft, Pencil, Plus, Settings, Trash2, X};
 
 use crate::{
-    ApplicationAccountItem, ApplicationMenuItem, ApplicationSceneItem, ApplicationUser,
-    application_account::ApplicationAccountMenu, application_navigation::ApplicationNavigation,
+    ApplicationAccountItem, ApplicationMenuItem, ApplicationSceneItem, ApplicationTopbarItem,
+    ApplicationUser, application_account::ApplicationAccountMenu,
+    application_navigation::ApplicationNavigation,
 };
 
 #[component]
@@ -26,6 +27,7 @@ pub fn ApplicationShell(
     on_select_page: Callback<String>,
     account_items: Vec<ApplicationAccountItem>,
     on_account_action: Callback<String>,
+    #[props(default)] topbar_items: Vec<ApplicationTopbarItem>,
     #[props(default)] status: Option<String>,
     #[props(default)] on_edit_application: Option<Callback<()>>,
     #[props(default)] on_create_scene: Option<Callback<()>>,
@@ -43,6 +45,7 @@ pub fn ApplicationShell(
     }
     let mut mobile_navigation_open = use_signal(|| false);
     let mut account_menu_open = use_signal(|| false);
+    let topbar_menu_open = use_signal(|| None::<String>);
     let shell_select_page = Callback::new(move |page_id: String| {
         account_menu_open.set(false);
         mobile_navigation_open.set(false);
@@ -148,6 +151,12 @@ pub fn ApplicationShell(
                         if let Some(message) = status {
                             Badge { variant: BadgeVariant::Outline, "{message}" }
                         }
+                        for item in topbar_items {
+                            ApplicationTopbarMenu {
+                                item,
+                                open: topbar_menu_open,
+                            }
+                        }
                         if let Some(configure_page) = on_configure_page {
                             Button {
                                 r#type: "button",
@@ -209,6 +218,73 @@ pub fn ApplicationShell(
                     on_action: shell_account_action,
                     on_create_menu,
                     on_delete_menu: shell_delete_menu,
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn ApplicationTopbarMenu(item: ApplicationTopbarItem, mut open: Signal<Option<String>>) -> Element {
+    let item_id = item.id.clone();
+    let item_id_for_trigger = item_id.clone();
+    let menu_label = format!("打开{}", item.label);
+    rsx! {
+        section { class: "application-shell__topbar-menu",
+            Button {
+                class: "application-shell__topbar-trigger",
+                r#type: "button",
+                size: ButtonSize::IconSm,
+                variant: ButtonVariant::Ghost,
+                title: menu_label.clone(),
+                aria_label: menu_label,
+                aria_expanded: (open().as_deref() == Some(item.id.as_str())).to_string(),
+                onclick: move |_| {
+                    if open().as_deref() == Some(item_id_for_trigger.as_str()) {
+                        open.set(None);
+                    } else {
+                        open.set(Some(item_id_for_trigger.clone()));
+                    }
+                },
+                if item.icon.as_deref() == Some("github") {
+                    Github { class: "size-4" }
+                } else if let Some(icon) = item.icon.as_deref() {
+                    az_ui_components::navigation_icon::NavigationIcon {
+                        name: icon.to_owned(),
+                        class: "size-4".to_owned(),
+                    }
+                } else {
+                    span { "{item.label}" }
+                }
+            }
+            if open().as_deref() == Some(item_id.as_str()) {
+                div {
+                    class: "application-shell__topbar-dismiss",
+                    aria_hidden: "true",
+                    onclick: move |_| open.set(None),
+                }
+                aside { class: "application-shell__topbar-panel", role: "menu",
+                    header { class: "application-shell__topbar-panel-header",
+                        strong { "{item.label}" }
+                    }
+                    for group in item.groups {
+                        section { class: "application-shell__topbar-group",
+                            h3 { "{group.label}" }
+                            for link in group.links {
+                                a {
+                                    class: "application-shell__topbar-link",
+                                    href: "{link.href}",
+                                    target: "_blank",
+                                    rel: "noreferrer",
+                                    role: "menuitem",
+                                    span { class: "application-shell__topbar-link-title", "{link.label}" }
+                                    if let Some(description) = link.description {
+                                        span { class: "application-shell__topbar-link-description", "{description}" }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

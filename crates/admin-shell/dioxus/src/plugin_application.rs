@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 
 use crate::{
     ApplicationAccountItem, ApplicationPage, ApplicationRuntimePage, ApplicationShell,
-    ApplicationUser,
+    ApplicationTopbarItem, ApplicationUser,
     page_cache::{PageScope, PageSource},
     page_deck::PageDeck,
     plugin_navigation::PluginNavigation,
@@ -23,6 +23,7 @@ pub fn PluginApplication(
     #[props(default)] render_runtime_page: Option<Callback<ApplicationRuntimePage, Element>>,
     #[props(default)] account_items: Vec<ApplicationAccountItem>,
     #[props(default)] on_account_action: Option<Callback<String>>,
+    #[props(default)] topbar_items: Vec<ApplicationTopbarItem>,
     #[props(default = 6)] workspace_cache_capacity: usize,
     #[props(default = 2)] account_cache_capacity: usize,
 ) -> Element {
@@ -125,6 +126,7 @@ pub fn PluginApplication(
                 on_select_page: move |page_id: String| { active_page_ids.write().insert(workspace_id.clone(), page_id); },
                 on_account_action: account_action,
                 account_items,
+                topbar_items,
                 PageDeck {
                     pages: sources.clone(), selected: workspace_page.map(str::to_owned),
                     active: fullscreen_page.is_none(), capacity: workspace_cache_capacity,

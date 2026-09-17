@@ -39,6 +39,30 @@ pub struct ApplicationAccountItem {
     pub destructive: bool,
 }
 
+/// 顶栏资源插件贡献的分组和外部链接。
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ApplicationTopbarItem {
+    pub id: String,
+    pub label: String,
+    pub icon: Option<String>,
+    pub groups: Vec<ApplicationTopbarGroup>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ApplicationTopbarGroup {
+    pub id: String,
+    pub label: String,
+    pub links: Vec<ApplicationTopbarLink>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ApplicationTopbarLink {
+    pub id: String,
+    pub label: String,
+    pub description: Option<String>,
+    pub href: String,
+}
+
 /// 运行时插件贡献的可序列化页面入口。
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ApplicationRuntimePage {
