@@ -2,16 +2,18 @@
 body:has(.dx-conversation[data-appearance="codex"]),
 .dx-conversation[data-appearance="codex"] {
   --conversation-surface: #fff;
-  --conversation-sidebar: #f9f9f9;
-  --conversation-control: #f7f7f7;
-  --conversation-text: #282828;
+  --conversation-sidebar: #fdfdfd;
+  --conversation-control: #fff;
+  --conversation-text: #212121;
   --conversation-muted: #8f8f8f;
   --conversation-hover: #00000007;
-  --conversation-selected: #0000000d;
+  --conversation-selected: #f4f4f4;
   --conversation-border: #00000012;
   --conversation-shadow:
     0 0 0 1px #0000000a, 0 2px 8px #0000000a, 0 4px 80px 8px #00000006;
-  --conversation-content: 768px;
+  --conversation-content: 752px;
+  --conversation-sidebar-width: 345px;
+  --conversation-lane-offset: 0px;
   --foreground: var(--conversation-text);
   --muted-foreground: var(--conversation-muted);
   --background: var(--conversation-surface);
@@ -34,7 +36,7 @@ body:has(.dx-conversation[data-appearance="codex"]),
 }
 .dx-conversation[data-appearance="codex"] {
   position: relative;
-  grid-template-columns: 275px minmax(0, 1fr);
+  grid-template-columns: var(--conversation-sidebar-width) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   background: var(--conversation-surface);
   color: var(--conversation-text);
@@ -92,15 +94,16 @@ body:has(.dx-conversation[data-appearance="codex"]),
   gap: 0;
   padding: 0 8px 8px;
   border: 0;
+  border-right: 1px solid var(--conversation-border);
   background: var(--conversation-sidebar);
   overflow: hidden;
 }
 .dx-conversation__sidebar-heading {
-  height: 46px;
+  height: 74px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 6px 0 10px;
+  padding: 26px 6px 0 10px;
   flex-shrink: 0;
 }
 .dx-conversation__brand {
@@ -112,7 +115,7 @@ body:has(.dx-conversation[data-appearance="codex"]),
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding-top: 10px;
+  padding-top: 0;
 }
 .dx-conversation__navigation .dx-button,
 .dx-conversation__sidebar-footer .dx-button {
@@ -125,7 +128,7 @@ body:has(.dx-conversation[data-appearance="codex"]),
   font-size: 14px;
 }
 .dx-conversation__section-label {
-  margin: 27px 10px 8px;
+  margin: 26px 10px 8px;
   color: var(--conversation-muted);
   font-size: 12px;
 }
@@ -218,7 +221,22 @@ body:has(.dx-conversation[data-appearance="codex"]),
   display: inline-flex;
 }
 .dx-conversation[data-appearance="codex"] .dx-conversation__messages {
-  padding: 24px max(24px, calc((100% - var(--conversation-content)) / 2));
+  padding: 24px
+    max(
+      24px,
+      calc(
+        (100% - var(--conversation-content) + 16px) / 2 -
+          var(--conversation-lane-offset)
+      )
+    )
+    24px
+    max(
+      24px,
+      calc(
+        (100% - var(--conversation-content) + 16px) / 2 +
+          var(--conversation-lane-offset)
+      )
+    );
   scroll-behavior: auto;
   scrollbar-width: thin;
 }
@@ -304,9 +322,11 @@ body:has(.dx-conversation[data-appearance="codex"]),
 }
 .dx-conversation__composer-wrap {
   flex-shrink: 0;
+  position: relative;
+  left: var(--conversation-lane-offset);
   width: min(var(--conversation-content), calc(100% - 48px));
   margin: 0 auto;
-  padding: 0 0 12px;
+  padding: 0 0 9px;
 }
 .dx-conversation[data-appearance="codex"] .dx-conversation__composer {
   position: relative;
@@ -356,7 +376,7 @@ body:has(.dx-conversation[data-appearance="codex"]),
   height: 32px;
   min-height: 32px;
   padding: 0;
-  margin-left: auto;
+  margin-left: 4px;
   border: 0;
   border-radius: 50%;
   flex: 0 0 auto;
@@ -370,7 +390,7 @@ body:has(.dx-conversation[data-appearance="codex"]),
   gap: 0;
   flex-wrap: nowrap;
   width: auto;
-  max-width: calc(100% - 82px);
+  max-width: 100%;
   min-width: 0;
 }
 .dx-conversation[data-appearance="codex"]
@@ -378,7 +398,7 @@ body:has(.dx-conversation[data-appearance="codex"]),
   .dx-select {
   width: auto;
   min-width: 0;
-  max-width: 300px;
+  max-width: 240px;
 }
 .dx-conversation[data-appearance="codex"]
   .dx-conversation__model-selector
@@ -421,10 +441,11 @@ body:has(.dx-conversation[data-appearance="codex"]),
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  min-height: 34px;
+  min-height: 0;
   color: var(--conversation-muted);
 }
-.dx-conversation__composer-footer > small {
+.dx-conversation__composer-footer > small:not(:empty) {
+  padding-top: 6px;
   white-space: nowrap;
   font-size: 11px;
 }
@@ -487,7 +508,10 @@ body:has(.dx-conversation[data-appearance="codex"]),
   display: none;
 }
 .dx-conversation[data-appearance="codex"][data-context="true"] {
-  grid-template-columns: 275px minmax(0, 1fr) minmax(260px, 28%);
+  grid-template-columns: var(--conversation-sidebar-width) minmax(
+      0,
+      1fr
+    ) minmax(260px, 28%);
 }
 .dx-conversation[data-appearance="codex"][data-context="true"][data-sidebar-collapsed="true"] {
   grid-template-columns: minmax(0, 1fr) minmax(260px, 28%);
@@ -497,7 +521,7 @@ body:has(.dx-conversation[data-appearance="codex"]),
 }
 @media (max-width: 1100px) {
   .dx-conversation[data-appearance="codex"][data-context="true"] {
-    grid-template-columns: 275px minmax(0, 1fr);
+    grid-template-columns: var(--conversation-sidebar-width) minmax(0, 1fr);
   }
   .dx-conversation[data-appearance="codex"][data-context="true"][data-sidebar-collapsed="true"] {
     grid-template-columns: minmax(0, 1fr);
@@ -565,7 +589,8 @@ body:has(.dx-conversation[data-appearance="codex"]),
     width: calc(100% - 24px);
     padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
-  .dx-conversation__composer-footer > small {
+  .dx-conversation__composer-footer > small:not(:empty) {
+    padding-top: 6px;
     font-size: 10px;
   }
   .dx-conversation[data-appearance="codex"] .dx-conversation__model-selector {
@@ -593,4 +618,16 @@ body:has(.dx-conversation[data-appearance="codex"]) .dx-dialog {
 }
 body:has(.dx-conversation[data-appearance="codex"]) .dx-dialog .dx-button {
   font-weight: 400;
+}
+
+/* 参照用户截图的宽屏阅读轴；窄屏保留对称安全边距。 */
+@media (min-width: 1700px) {
+  .dx-conversation[data-appearance="codex"] {
+    --conversation-lane-offset: 14px;
+  }
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  .dx-conversation[data-appearance="codex"] {
+    --conversation-sidebar-width: 275px;
+  }
 }

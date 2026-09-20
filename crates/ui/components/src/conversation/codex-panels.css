@@ -1,0 +1,255 @@
+/* Codex 外观的模型快捷条、路由状态与环境信息，数据与能力由使用方提供。 */
+.dx-conversation__history-group > summary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  list-style: none;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.dx-conversation__history-group > summary::-webkit-details-marker {
+  display: none;
+}
+.dx-conversation__history-group:not([open]) > summary > svg:first-child {
+  transform: rotate(-90deg);
+}
+.dx-conversation__history-group > summary > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dx-conversation__history-group > summary > svg {
+  flex-shrink: 0;
+  color: var(--conversation-muted);
+}
+.dx-conversation[data-appearance="codex"]
+  .dx-conversation__history-group
+  > .dx-conversation__history-row {
+  margin-left: 25px;
+}
+.dx-conversation__model-shortcuts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+.dx-conversation__shortcut-label {
+  color: var(--conversation-muted);
+  white-space: nowrap;
+}
+.dx-conversation__model-shortcuts .dx-button {
+  min-height: 28px;
+  height: 28px;
+  max-width: 100%;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font: 12px/18px var(--font-sans);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dx-conversation[data-appearance="codex"]
+  .dx-conversation__model-shortcuts
+  button[aria-pressed="true"] {
+  background: var(--conversation-selected);
+}
+.dx-conversation__router {
+  position: relative;
+  margin: 6px 8px;
+  font: 12px/1.5 system-ui;
+}
+.dx-conversation__router > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 8px;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 9px;
+  background: color-mix(in srgb, #4385ff 8%, transparent);
+  list-style: none;
+  cursor: pointer;
+}
+.dx-conversation__router > summary::-webkit-details-marker {
+  display: none;
+}
+.dx-conversation__router > summary b {
+  color: #508df2;
+  white-space: nowrap;
+}
+.dx-conversation__router > summary span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.dx-conversation__router-panel {
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 9px;
+  background: var(--conversation-surface);
+  max-height: 300px;
+  overflow-y: auto;
+}
+.dx-conversation__router-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+  min-width: 0;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+}
+.dx-conversation__router-settings label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  min-height: 28px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.dx-conversation__router-settings input {
+  appearance: none;
+  position: relative;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.dx-conversation__router-settings input::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px #0004;
+}
+.dx-conversation__router-settings select {
+  width: 100%;
+  max-width: 190px;
+  min-width: 0;
+  height: 26px;
+  padding: 3px 5px;
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  border-radius: 7px;
+  font: 11px var(--font-sans);
+  background: color-mix(in srgb, currentColor 4%, transparent);
+  color: inherit;
+}
+.dx-conversation__router-settings :disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.dx-conversation__router-note {
+  margin: 6px 0 0;
+  color: var(--conversation-muted);
+  font-size: 11px;
+  text-align: right;
+}
+.dx-conversation__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.dx-conversation__device-control {
+  min-width: 0;
+  max-width: 43%;
+}
+.dx-conversation__model-control {
+  min-width: 0;
+  max-width: 44%;
+  margin-left: auto;
+}
+.dx-conversation[data-appearance="codex"]
+  .dx-conversation__model-control
+  .dx-select-trigger {
+  overflow: hidden;
+}
+.dx-conversation__environment {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  bottom: 0;
+  width: 290px;
+  padding: 4px 16px 20px;
+  overflow-y: auto;
+  border-left: 1px solid var(--conversation-border);
+  background: var(--conversation-surface);
+  z-index: 15;
+  font-size: 12px;
+}
+.dx-conversation__environment header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.dx-conversation__environment strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.dx-conversation__environment dl {
+  margin: 16px 0;
+}
+.dx-conversation__environment dt {
+  margin-top: 20px;
+  color: var(--conversation-muted);
+  font-size: 11px;
+}
+.dx-conversation__environment dd {
+  margin: 5px 0 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1699px) {
+  .dx-conversation__environment {
+    box-shadow: -8px 0 24px #0001;
+  }
+}
+@media (max-width: 700px) {
+  .dx-conversation__router-panel {
+    max-height: 160px;
+  }
+  .dx-conversation__router-settings label {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .dx-conversation__router-settings select {
+    max-width: none;
+  }
+  .dx-conversation__router > summary {
+    font-size: 11px;
+  }
+  .dx-conversation__router-note {
+    text-align: left;
+  }
+  .dx-conversation__environment {
+    width: min(290px, 100%);
+  }
+  .dx-conversation__device-control {
+    flex: 1;
+    max-width: 36%;
+  }
+  .dx-conversation__model-control {
+    flex: 1;
+    max-width: 40%;
+  }
+  .dx-conversation[data-appearance="codex"] .dx-conversation__composer-actions {
+    gap: 0;
+  }
+}
+@media (max-height: 700px) {
+  .dx-conversation__router-panel {
+    max-height: 100px;
+  }
+}
