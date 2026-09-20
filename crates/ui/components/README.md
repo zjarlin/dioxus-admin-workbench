@@ -10,6 +10,7 @@
 - `badge`、`button`、`checkbox`、`dialog`、`input`、`select`、`textarea`：固定 registry 源码组件。
 - `data_table`：支持树形表头、固定列、合并单元格、编辑器和右侧面板的通用数据表格。
 - `collection_tree`：以同一套选择、展开和行渲染契约展示扁平集合或层级树。
+- 对话工作区：[conversation](src/conversation/README.md) 提供默认与 Codex 外观、响应式侧栏、消息流和输入区布局；业务方选择 `data-appearance="codex"`。
 - `spatial`：由组件内部管理节点定位和树缩进，消费方不生成 inline style。
 
 业务页面只提供领域数据与渲染插槽，不在本 crate 固化模型、菜单或运行时记录语义。

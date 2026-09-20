@@ -44,6 +44,7 @@ pub fn UiStylesheets(#[props(default)] relative_paths: bool) -> Element {
         document::Stylesheet { href: href(format!("{ADMIN_FONTS}/noto/wght.css")) }
         document::Stylesheet { href: href(AGENT_CHAT_STYLESHEET.to_string()) }
         document::Stylesheet { href: href(asset!("/src/conversation/style.css", AssetOptions::css()).to_string()) }
+        document::Stylesheet { href: href(asset!("/src/conversation/codex.css", AssetOptions::css()).to_string()) }
         document::Stylesheet { href: href(EXTENSION_BROWSER_STYLESHEET.to_string()) }
         document::Stylesheet { href: href(UTILITIES_STYLESHEET.to_string()) }
         document::Stylesheet { href: href(THEME_STYLESHEET.to_string()) }
