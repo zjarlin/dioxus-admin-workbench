@@ -13,6 +13,16 @@ pub(crate) fn ApplicationAccountMenu(
     on_action: Callback<String>,
 ) -> Element {
     let menu_label = format!("打开 {} 的账户菜单", user.label);
+    // 普通动作与 Destructive 动作（如退出系统）分开渲染，Destructive 始终固定在底部分隔线之后。
+    let mut normal = Vec::new();
+    let mut destructive = Vec::new();
+    for item in items {
+        if item.destructive {
+            destructive.push(item);
+        } else {
+            normal.push(item);
+        }
+    }
     rsx! {
         section {
             class: "application-shell__account",
@@ -48,8 +58,15 @@ pub(crate) fn ApplicationAccountMenu(
                         }
                     }
                     div { class: "application-shell__account-actions",
-                        for item in items {
-                            AccountActionButton { item, on_action }
+                        for item in normal {
+                            AccountActionButton { item, on_action: on_action.clone() }
+                        }
+                    }
+                    if !destructive.is_empty() {
+                        div { class: "application-shell__account-signout",
+                            for item in destructive {
+                                AccountActionButton { item, on_action: on_action.clone() }
+                            }
                         }
                     }
                 }
