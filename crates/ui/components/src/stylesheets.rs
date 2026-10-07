@@ -115,6 +115,17 @@ mod tests {
     }
 
     #[test]
+    fn admin_pages_fill_the_available_content_height() {
+        let admin = include_str!("admin/style.css");
+        // 页面骨架必须纵向撑满内容区，末段主区域自动增长，避免底部大片留白。
+        assert!(admin.contains(".admin-page { display: flex; flex-direction: column;"));
+        assert!(admin.contains(".admin-page > :last-child { flex: 1 1 auto; min-height: 0; }"));
+        assert!(admin.contains(".admin-collection > .admin-table { flex: 1 1 auto; min-height: 0; }"));
+        assert!(admin.contains(".admin-table > .data-table-workspace { flex: 1 1 auto; min-height: 0;"));
+        assert!(admin.contains(".admin-section > :last-child { flex: 1 1 auto; min-height: 0; }"));
+    }
+
+    #[test]
     fn runtime_record_form_keeps_shared_grid_layout() {
         let workbench = include_str!("workbench.css");
         assert!(workbench.contains(".aio-runtime-record-form__field"));
