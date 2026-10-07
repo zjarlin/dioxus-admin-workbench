@@ -7,6 +7,7 @@ use crate::{
     page_cache::{PageScope, PageSource},
     page_deck::PageDeck,
     plugin_navigation::PluginNavigation,
+    url_state::{UrlUpdate, use_url_navigation},
 };
 
 /// 将插件页面编排为场景菜单树与独立账户页面。
@@ -27,14 +28,7 @@ pub fn PluginApplication(
     #[props(default = 6)] workspace_cache_capacity: usize,
     #[props(default = 2)] account_cache_capacity: usize,
 ) -> Element {
-    let mut active_page_ids = use_signal(BTreeMap::<String, String>::new);
-    let mut account_page_id = use_signal(|| None::<String>);
-    let previous_workspace =
-        use_hook(|| std::rc::Rc::new(std::cell::RefCell::new(workspace_id.clone())));
-    if *previous_workspace.borrow() != workspace_id {
-        *previous_workspace.borrow_mut() = workspace_id.clone();
-        account_page_id.set(None);
-    }
+    let url = use_url_navigation();
     let scope = PageScope {
         id: workspace_id.clone(),
         version: workspace_context,
@@ -50,11 +44,37 @@ pub fn PluginApplication(
             };
         }
     };
-    let selected_page = active_page_ids.read().get(&workspace_id).cloned();
-    let selected_account_page = account_page_id();
-    let workspace_page = navigation.workspace_page(selected_page.as_deref());
+    let location = url.location.read().clone();
+    let selected_page = location.as_ref().and_then(|value| value.page.clone());
+    let selected_account_page = location.as_ref().and_then(|value| value.account.clone());
+    let resolved_page = navigation.workspace_page(selected_page.as_deref());
+    let invalid_page = selected_page.is_some() && resolved_page != selected_page.as_deref();
+    let workspace_page = if invalid_page { None } else { resolved_page };
     let fullscreen_page = navigation.account_page(selected_account_page.as_deref());
-    let active_scene_id = navigation.scene_for_page(workspace_page).map(str::to_owned);
+    let default_page = navigation.workspace_page(None).map(str::to_owned);
+    let scope_key = format!("{}:{}", scope.id, scope.version);
+    let initial_page = default_page.clone();
+    use_effect(move || {
+        let location = url.location.read();
+        if let Some(value) = location.as_ref() {
+            url.scope(&scope_key, initial_page.as_deref());
+            if value.page.is_none() && initial_page.is_some() {
+                url.navigate(
+                    initial_page.as_deref(),
+                    value.account.as_deref(),
+                    UrlUpdate::Replace,
+                );
+            }
+        }
+    });
+    if location.is_none() {
+        return rsx! { az_ui_components::admin::RequestState {} };
+    }
+    let unavailable =
+        invalid_page || (selected_account_page.is_some() && fullscreen_page.is_none());
+    let active_scene_id = navigation
+        .scene_for_page(workspace_page.or(default_page.as_deref()))
+        .map(str::to_owned);
     let scenes = navigation.scenes();
     let menus = navigation.menus(active_scene_id.as_deref());
     let scene_destinations = scenes
@@ -88,6 +108,7 @@ pub fn PluginApplication(
                 .map(str::to_owned)
         })
         .collect::<Vec<_>>();
+    let account_workspace_page = workspace_page.map(str::to_owned);
     let account_action = Callback::new(move |action_id: String| {
         if let Some(item) = account_action_items
             .iter()
@@ -95,7 +116,11 @@ pub fn PluginApplication(
         {
             if let Some(page_id) = &item.page_id {
                 if valid_account_pages.contains(page_id) {
-                    account_page_id.set(Some(page_id.clone()));
+                    url.navigate(
+                        account_workspace_page.as_deref(),
+                        Some(page_id),
+                        UrlUpdate::Push,
+                    );
                 }
                 return;
             }
@@ -104,7 +129,7 @@ pub fn PluginApplication(
             }
         }
     });
-    let scene_workspace = workspace_id.clone();
+    let background_page = workspace_page.map(str::to_owned);
 
     rsx! {
         // 账户页打开时保留后台组件实例，返回后恢复页面内部状态。
@@ -120,16 +145,25 @@ pub fn PluginApplication(
                 account_enabled,
                 on_select_scene: move |scene_id: String| {
                     if let Some((_, page_id)) = scene_destinations.iter().find(|(id, _)| id == &scene_id) {
-                        active_page_ids.write().insert(scene_workspace.clone(), page_id.clone());
+                        url.navigate(Some(page_id), None, UrlUpdate::Push);
                     }
                 },
-                on_select_page: move |page_id: String| { active_page_ids.write().insert(workspace_id.clone(), page_id); },
+                on_select_page: move |page_id: String| url.navigate(Some(&page_id), None, UrlUpdate::Push),
                 on_account_action: account_action,
                 account_items,
                 topbar_items,
+                if unavailable {
+                    section { class: "application-shell__state", role: "alert",
+                        p { "页面不存在或没有访问权限" }
+                        az_ui_components::button::Button {
+                            onclick: move |_| url.navigate(default_page.as_deref(), None, UrlUpdate::Push),
+                            "返回可用页面"
+                        }
+                    }
+                }
                 PageDeck {
-                    pages: sources.clone(), selected: workspace_page.map(str::to_owned),
-                    active: fullscreen_page.is_none(), capacity: workspace_cache_capacity,
+                    pages: sources.clone(), selected: if unavailable { None } else { workspace_page.map(str::to_owned) },
+                    active: fullscreen_page.is_none() && !unavailable, capacity: workspace_cache_capacity,
                     scope: scope.clone(),
                     renderer: render_runtime_page,
                     prepared_pages,
@@ -141,7 +175,7 @@ pub fn PluginApplication(
             active: fullscreen_page.is_some(), capacity: account_cache_capacity,
             scope,
             renderer: render_runtime_page, fullscreen: application_label,
-            on_back: move |_| account_page_id.set(None),
+            on_back: move |_| url.navigate(background_page.as_deref(), None, UrlUpdate::Push),
         }
     }
 }

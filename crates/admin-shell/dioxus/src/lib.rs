@@ -13,6 +13,7 @@ mod page_cache;
 mod page_deck;
 mod plugin_application;
 mod plugin_navigation;
+mod url_state;
 
 #[cfg(feature = "workbench")]
 mod application_dialog;
@@ -41,6 +42,7 @@ pub use extension::*;
 pub use plugin_application::PluginApplication;
 #[cfg(feature = "workbench")]
 pub use provider::*;
+pub use url_state::{PageUrlState, UrlUpdate, use_page_url_state};
 #[cfg(feature = "workbench")]
 pub use workbench::{AdminShell, App};
 

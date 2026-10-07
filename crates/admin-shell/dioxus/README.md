@@ -43,6 +43,16 @@ let page = ApplicationPage {
 
 容器提供 `data-aio-page-active`、`data-aio-workspace-active`、`data-aio-workspace` 和 `data-aio-workspace-context`。宿主必须在工作区离开时阻止后台服务调用并撤销票据，返回后重新鉴权，仅页面状态可保留；这些 DOM 标记不是服务端授权依据。壳不读取或管理插件内部状态，也不承诺完整刷新后保留内存。
 
+## 可分享导航与页面状态
+
+`PluginApplication` 将当前业务页面写入 `?page=<稳定页面ID>`，账户全屏页使用 `account` 参数；场景由页面定义派生，不维护另一套场景状态。初次解析地址后才挂载业务页面，前进后退从 URL 恢复。不存在或未授权的页面显示错误，URL 不构成权限凭证。工作区切换沿用宿主的鉴权流程，只在内存中隔离各工作区的视图缓存，不把登录上下文或挂载票据放进链接。
+
+原生页面通过 `use_page_url_state("file-list")` 读取 `value("category")` 等业务字段，通过 `update(&[("category", Some(value))], UrlUpdate::Push)` 提交。业务参数统一使用 `view.` 命名空间，页面切换不会误删宿主或跟踪参数；同一动作的相关字段一次提交。默认值用 `None` 省略；搜索输入使用 `Continuous` 将同一输入批次合并为一个历史节点，校正非法参数使用 `Replace`。
+
+插件必须显式声明可分享字段，禁止序列化整个 store、凭据或未保存表单。iframe 宿主通过 `window.__adminUrlState` 的 `parameter`、`update` 与 `admin-url-state` 事件接入已有安全桥，分享的是外层 URL 中的 `route`，不是包含临时票据的 iframe 资产地址。
+
+窗口和壳内容区滚动自动恢复；内部滚动容器声明稳定的 `data-url-scroll="files-list"`。`scroll` 保存有界位置，滚动合并使用 replace，不创建历史节点；新页面和历史恢复等待容器及数据就绪。偏移只是尽力恢复，不保证数据增删或设备尺寸变化后定位到同一条记录，需要精确定位时应增加稳定记录锚点。
+
 页面容器的 `.application-page` 继承内容区可用高度，前端插件 iframe 消费共享 `.application-frontend` 样式铺满容器，不设置固定像素高度。插件负责其内部滚动和弹窗布局；壳仍负责原生长页面滚动及桌面、移动端外边距。
 
 不需要元数据工作台时关闭默认 feature，依赖中不会包含 Provider 注册运行时：

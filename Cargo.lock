@@ -182,7 +182,9 @@ dependencies = [
  "icons",
  "manganis",
  "rudi",
+ "serde",
  "serde_json",
+ "tracing",
 ]
 
 [[package]]
