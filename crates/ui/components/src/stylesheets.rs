@@ -120,8 +120,12 @@ mod tests {
         // 页面骨架必须纵向撑满内容区，末段主区域自动增长，避免底部大片留白。
         assert!(admin.contains(".admin-page { display: flex; flex-direction: column;"));
         assert!(admin.contains(".admin-page > :last-child { flex: 1 1 auto; min-height: 0; }"));
-        assert!(admin.contains(".admin-collection > .admin-table { flex: 1 1 auto; min-height: 0; }"));
-        assert!(admin.contains(".admin-table > .data-table-workspace { flex: 1 1 auto; min-height: 0;"));
+        assert!(
+            admin.contains(".admin-collection > .admin-table { flex: 1 1 auto; min-height: 0; }")
+        );
+        assert!(
+            admin.contains(".admin-table > .data-table-workspace { flex: 1 1 auto; min-height: 0;")
+        );
         assert!(admin.contains(".admin-section > :last-child { flex: 1 1 auto; min-height: 0; }"));
     }
 
