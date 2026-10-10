@@ -171,6 +171,9 @@
   max-width: 44%;
   margin-left: auto;
 }
+.dx-conversation__mobile-actions {
+  display: none;
+}
 .dx-conversation[data-appearance="codex"]
   .dx-conversation__model-control
   .dx-select-trigger {
@@ -236,16 +239,93 @@
   .dx-conversation__environment {
     width: min(290px, 100%);
   }
-  .dx-conversation__device-control {
-    flex: 1;
-    max-width: 36%;
+  /* 手机以设备/项目、模型/发送两行排列，快捷模型不重复占用消息空间。 */
+  .dx-conversation__model-shortcuts {
+    display: none;
   }
-  .dx-conversation__model-control {
-    flex: 1;
-    max-width: 40%;
+  .dx-conversation__mobile-actions {
+    display: block;
   }
   .dx-conversation[data-appearance="codex"] .dx-conversation__composer-actions {
-    gap: 0;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 2px 4px;
+    padding: 0 8px 8px;
+  }
+  .dx-conversation__device-control {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    max-width: none;
+    border-bottom: 1px solid var(--conversation-border);
+  }
+  .dx-conversation__model-control {
+    grid-column: 2;
+    grid-row: 2;
+    max-width: none;
+    margin: 0;
+  }
+  .dx-conversation__more {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .dx-conversation[data-appearance="codex"] .dx-conversation__send {
+    grid-column: 3;
+    grid-row: 2;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+  }
+  .dx-conversation[data-appearance="codex"] .dx-conversation__more > button {
+    width: 44px;
+    height: 44px;
+  }
+  .dx-conversation[data-appearance="codex"]
+    .dx-conversation__model-selector
+    .dx-select {
+    width: 100%;
+    max-width: none;
+  }
+  .dx-conversation[data-appearance="codex"]
+    .dx-conversation__model-selector
+    .dx-select-trigger {
+    min-height: 44px;
+    padding: 8px;
+    font-size: 13px;
+  }
+  .dx-conversation__device-control .dx-conversation__model-selector > button {
+    display: none;
+  }
+  /* 选择器锚定整块输入区，长设备名不会把浮层推到屏幕外。 */
+  .dx-conversation__composer .dx-select {
+    position: static;
+  }
+  .dx-conversation[data-appearance="codex"]
+    .dx-conversation__composer
+    .dx-select-list {
+    left: 0;
+    right: 0;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    max-height: min(320px, 45dvh);
+  }
+  .dx-conversation__composer .dx-select-option {
+    min-height: 44px;
+    padding: 10px;
+  }
+  .dx-conversation__composer .dx-select-option > span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .dx-conversation__action-menu {
+    max-height: min(360px, 60dvh);
+    overflow-y: auto;
+  }
+  .dx-conversation__action-menu .dx-button {
+    min-height: 44px;
   }
 }
 @media (max-height: 700px) {
