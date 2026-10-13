@@ -151,8 +151,9 @@ mod tests {
         assert!(admin.contains(".admin-skeleton-row[data-row=\"1\"] .admin-skeleton"));
         // 减弱动效偏好下必须保留静态骨架，不允许继续旋转、扫光或入场。
         assert!(admin.contains("@media (prefers-reduced-motion: reduce)"));
+        // 媒体查询必须用带前缀的高特异性选择器，否则基础规则会压过它、图标仍会旋转。
         assert!(
-            admin.contains(".admin-request-state__spinner, .admin-skeleton, .admin-skeleton-list { animation: none; }")
+            admin.contains(".admin-request-state .admin-request-state__spinner,\n  .admin-request-state .admin-skeleton,\n  .admin-request-state .admin-skeleton-list { animation: none; }")
         );
     }
 
