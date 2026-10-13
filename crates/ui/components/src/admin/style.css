@@ -39,10 +39,71 @@
 .admin-feedback { display: flex; gap: 8px; align-items: start; padding: 12px 16px; margin: 0; background: var(--success-bg); color: var(--success); overflow-wrap: anywhere; }
 .admin-feedback[data-error="true"] { background: var(--destructive-bg); color: var(--destructive); }
 .admin-feedback svg { width: 18px; height: 18px; margin-top: 2px; flex: 0 0 auto; }
-.admin-request-state { min-height: 280px; display: grid; place-content: center; justify-items: center; gap: 16px; color: var(--secondary-foreground); }
+.admin-request-state { min-height: 280px; display: grid; place-content: center; justify-items: center; gap: 20px; color: var(--secondary-foreground); }
 .admin-request-state svg { width: 24px; height: 24px; }
 .admin-request-state p { overflow-wrap: anywhere; max-width: 40rem; }
-.admin-skeleton { width: min(32rem, 60vw); height: 20px; background: var(--muted); border-radius: 4px; }
+/* 等待状态：转圈图标与文案同排，避免只靠一段静态文字表达“正在加载”。 */
+.admin-request-state__pending { display: flex; align-items: center; gap: 9px; }
+.admin-request-state__pending p { margin: 0; font-weight: 500; }
+.admin-request-state .admin-request-state__spinner {
+  width: 18px; height: 18px; flex: 0 0 auto;
+  color: var(--primary);
+  animation: admin-request-state-spin .9s linear infinite;
+}
+/* 骨架屏用卡片承载，宽度贴近内容区；入场轻微上浮，避免突兀闪现。 */
+.admin-skeleton-list {
+  width: min(40rem, 82vw);
+  display: grid; gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .04), 0 14px 36px -26px rgb(0 0 0 / .4);
+  animation: admin-skeleton-enter .45s ease-out both;
+}
+/* 骨架条以主题前景色混合出可见灰阶：在浅色与深色下都对比清晰。 */
+.admin-skeleton {
+  --admin-skeleton-base: color-mix(in oklab, var(--foreground) 10%, var(--card));
+  --admin-skeleton-sheen: color-mix(in oklab, var(--foreground) 3%, var(--card));
+  border-radius: 6px;
+  background-color: var(--admin-skeleton-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--admin-skeleton-base) 25%,
+    var(--admin-skeleton-sheen) 37%,
+    var(--admin-skeleton-base) 63%
+  );
+  background-size: 400% 100%;
+  animation: admin-request-state-shimmer 1.5s ease-in-out infinite;
+}
+.admin-skeleton--title { height: 16px; width: 42%; }
+.admin-skeleton-toolbar { display: flex; align-items: center; gap: 12px; }
+.admin-skeleton--field { height: 34px; flex: 1 1 auto; border-radius: 8px; }
+.admin-skeleton--action { height: 34px; width: 104px; flex: 0 0 auto; border-radius: 8px; }
+.admin-skeleton-rows { display: grid; gap: 10px; }
+.admin-skeleton-row { display: grid; grid-template-columns: 1.3fr 1fr 1.5fr .7fr; gap: 14px; }
+.admin-skeleton--cell { height: 14px; }
+/* 逐行错峰扫光，读起来像正在成形的内容而不是一屏等长色块。 */
+.admin-skeleton-row[data-row="1"] .admin-skeleton { animation-delay: .08s; }
+.admin-skeleton-row[data-row="2"] .admin-skeleton { animation-delay: .16s; }
+.admin-skeleton-row[data-row="3"] .admin-skeleton { animation-delay: .24s; }
+.admin-skeleton-row[data-row="4"] .admin-skeleton { animation-delay: .32s; }
+@keyframes admin-request-state-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes admin-request-state-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+@keyframes admin-skeleton-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+/* 减弱动效偏好下保留静态骨架，不再旋转、扫光或入场。 */
+@media (prefers-reduced-motion: reduce) {
+  .admin-request-state__spinner, .admin-skeleton, .admin-skeleton-list { animation: none; }
+  .admin-skeleton { background-image: none; }
+}
 .admin-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .admin-form { display: grid; gap: 16px; min-width: 0; }
 .admin-field { display: grid; gap: 8px; min-width: 0; text-align: left; }

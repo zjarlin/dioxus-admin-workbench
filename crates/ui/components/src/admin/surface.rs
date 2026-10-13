@@ -1,6 +1,6 @@
 use crate::button::{Button, ButtonVariant};
 use dioxus::prelude::*;
-use dioxus_icons::lucide::{CircleAlert, CircleCheck, RefreshCw};
+use dioxus_icons::lucide::{CircleAlert, CircleCheck, LoaderCircle, RefreshCw};
 
 #[component]
 pub fn PageSurface(children: Element) -> Element {
@@ -53,8 +53,28 @@ pub fn RequestState(
                     Button { variant: ButtonVariant::Outline, onclick: move |_| retry.call(()), RefreshCw {} "重试" }
                 }
             } else {
-                p { "正在加载" }
-                for _ in 0..4 { div { class: "admin-skeleton", aria_hidden: "true" } }
+                div { class: "admin-request-state__pending",
+                    LoaderCircle { class: "admin-request-state__spinner" }
+                    p { "正在加载" }
+                }
+                // 骨架屏按页面结构（标题、工具条、若干行）错落排列并逐行错峰扫光，
+                // 让短暂等待也能看出内容正在成形，而不是几段等长色块。
+                div { class: "admin-skeleton-list", aria_hidden: "true",
+                    div { class: "admin-skeleton admin-skeleton--title" }
+                    div { class: "admin-skeleton-toolbar",
+                        div { class: "admin-skeleton admin-skeleton--field" }
+                        div { class: "admin-skeleton admin-skeleton--action" }
+                    }
+                    div { class: "admin-skeleton-rows",
+                        for index in 0..5 {
+                            div { class: "admin-skeleton-row", "data-row": index.to_string(),
+                                for _ in 0..4 {
+                                    div { class: "admin-skeleton admin-skeleton--cell" }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -130,6 +130,33 @@ mod tests {
     }
 
     #[test]
+    fn admin_request_state_animates_and_respects_reduced_motion() {
+        let surface = include_str!("admin/surface.rs");
+        // 等待态必须同时给出可动效的转圈图标和结构化的错落骨架，不能退回静态文字。
+        assert!(surface.contains("admin-request-state__pending"));
+        assert!(surface.contains("admin-request-state__spinner"));
+        assert!(surface.contains("LoaderCircle"));
+        assert!(surface.contains("admin-skeleton-list"));
+        assert!(surface.contains("admin-skeleton--title"));
+        assert!(surface.contains("admin-skeleton-toolbar"));
+        assert!(surface.contains("admin-skeleton-rows"));
+        assert!(surface.contains("admin-skeleton--cell"));
+        assert!(surface.contains("\"data-row\""));
+        let admin = include_str!("admin/style.css");
+        assert!(admin.contains("@keyframes admin-request-state-spin"));
+        assert!(admin.contains("@keyframes admin-request-state-shimmer"));
+        assert!(admin.contains("@keyframes admin-skeleton-enter"));
+        // 骨架条必须在浅色与深色下都可见，不能退回几乎透明的 --muted 纯色块。
+        assert!(admin.contains("color-mix(in oklab, var(--foreground) 10%, var(--card))"));
+        assert!(admin.contains(".admin-skeleton-row[data-row=\"1\"] .admin-skeleton"));
+        // 减弱动效偏好下必须保留静态骨架，不允许继续旋转、扫光或入场。
+        assert!(admin.contains("@media (prefers-reduced-motion: reduce)"));
+        assert!(
+            admin.contains(".admin-request-state__spinner, .admin-skeleton, .admin-skeleton-list { animation: none; }")
+        );
+    }
+
+    #[test]
     fn runtime_record_form_keeps_shared_grid_layout() {
         let workbench = include_str!("workbench.css");
         assert!(workbench.contains(".aio-runtime-record-form__field"));
