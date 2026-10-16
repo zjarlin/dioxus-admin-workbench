@@ -136,6 +136,9 @@
 .admin-status[data-enabled="true"] { background: var(--success-bg); color: var(--success); }
 .admin-status svg { width: 12px; height: 12px; }
 @media (max-width: 900px) {
+  /* 分栏改为纵向排列后由页面滚动，不能把表格压缩到工具栏和分页之间。 */
+  .admin-page:has(> .admin-split) { height: auto; min-height: 100%; }
+  .admin-page > .admin-split { flex: 0 0 auto; }
   .admin-split { grid-template-columns: minmax(0, 1fr); }
   .admin-split > aside { border-right: 0; border-bottom: 1px solid var(--border); padding: 0 0 16px; }
 }
