@@ -30,7 +30,30 @@ fn destination(value: &str, base: &str) -> String {
     }
 }
 
-fn render(source: &str, links: &str, images: &str, references: &[(String, String)]) -> String {
+/// 返回 Markdown 中规范化后的图片地址，供调用方预取或映射到授权传输入口。
+pub fn image_sources(source: &str, base: &str) -> Vec<String> {
+    let mut images = std::collections::BTreeSet::new();
+    for event in Parser::new_ext(
+        source,
+        Options::ENABLE_TABLES | Options::ENABLE_STRIKETHROUGH | Options::ENABLE_TASKLISTS,
+    ) {
+        if let Event::Start(Tag::Image { dest_url, .. }) = event {
+            let url = destination(&dest_url, base);
+            if url != "#" {
+                images.insert(url);
+            }
+        }
+    }
+    images.into_iter().collect()
+}
+
+fn render(
+    source: &str,
+    links: &str,
+    images: &str,
+    references: &[(String, String)],
+    image_url: Option<&dyn Fn(String) -> String>,
+) -> String {
     let mut replacing = false;
     let mut reference_label = None;
     let mut suppress_link = false;
@@ -95,7 +118,14 @@ fn render(source: &str, links: &str, images: &str, references: &[(String, String
                 id,
             }) => Some(Event::Start(Tag::Image {
                 link_type,
-                dest_url: CowStr::from(destination(&dest_url, images)),
+                dest_url: {
+                    let destination = destination(&dest_url, images);
+                    let url = match image_url {
+                        Some(resolve) if destination != "#" => resolve(destination),
+                        _ => destination,
+                    };
+                    CowStr::from(url)
+                },
                 title,
                 id,
             })),
@@ -112,6 +142,8 @@ pub fn Markdown(
     source: String,
     link_base: String,
     image_base: String,
+    // 在相对地址规范化和安全协议过滤后，由嵌入宿主提供图片传输入口。
+    #[props(default)] image_url: Option<Callback<String, String>>,
     #[props(default)] references: Vec<(String, String)>,
     #[props(default)] on_reference: Callback<String>,
 ) -> Element {
@@ -128,7 +160,18 @@ pub fn Markdown(
             let _ = listener.send(());
         }
     });
-    let content = render(&source, &link_base, &image_base, &references);
+    let resolve = |source: String| {
+        image_url
+            .map(|resolve| resolve.call(source.clone()))
+            .unwrap_or(source)
+    };
+    let content = render(
+        &source,
+        &link_base,
+        &image_base,
+        &references,
+        Some(&resolve),
+    );
     let available = use_hook(|| std::rc::Rc::new(std::cell::RefCell::new(references.clone())));
     *available.borrow_mut() = references;
     rsx! {
@@ -171,6 +214,7 @@ mod tests {
             "https://app.test/",
             "https://app.test/",
             &[("memory:allowed".into(), "可信标题".into())],
+            None,
         );
         assert!(html.contains("href=\"#aio-reference-0\">可信标题</a>"));
         assert!(!html.contains("伪造标题"));
@@ -185,10 +229,41 @@ mod tests {
             "https://github.com/example/repo/blob/abc/",
             "https://aio.test/api/docs/abc/",
             &[],
+            None,
         );
         assert!(!html.contains("<script"));
         assert!(!html.contains("javascript:"));
         assert!(html.contains("https://aio.test/api/docs/abc/docs/screen.png"));
         assert!(html.contains("<table>"));
+    }
+    #[test]
+    fn image_transport_receives_resolved_reference_and_unicode_urls_without_changing_links() {
+        let proxy = |value: String| {
+            let query = url::form_urlencoded::Serializer::new(String::new())
+                .append_pair("url", &value)
+                .finish();
+            format!("/trusted-image?{query}")
+        };
+        let html = render(
+            "![图](图片.png) ![远程][image] [文档](guide.md) ![无效](javascript:alert(1))\n\n[image]: https://images.example/a.png",
+            "https://source.example/revision/",
+            "https://source.example/revision/",
+            &[],
+            Some(&proxy),
+        );
+        assert_eq!(html.matches("src=\"/trusted-image?").count(), 2);
+        assert!(html.contains("https%3A%2F%2Fimages.example%2Fa.png"));
+        assert!(html.contains("href=\"https://source.example/revision/guide.md\""));
+        assert!(!html.contains("javascript"));
+        assert_eq!(
+            image_sources(
+                "![图](图片.png) ![再次](图片.png) ![远程][image]\n\n[image]: https://images.example/a.png",
+                "https://source.example/revision/"
+            ),
+            vec![
+                "https://images.example/a.png",
+                "https://source.example/revision/%E5%9B%BE%E7%89%87.png"
+            ]
+        );
     }
 }
