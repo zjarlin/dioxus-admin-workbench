@@ -37,6 +37,12 @@ pub fn ApplicationShell(
     #[props(default)] on_configure_page: Option<Callback<()>>,
     children: Element,
 ) -> Element {
+    let brand_mark = application_label
+        .split_whitespace()
+        .filter_map(|part| part.chars().next())
+        .take(2)
+        .collect::<String>()
+        .to_uppercase();
     let mut sidebar_collapsed = use_signal(|| false);
     let mut breadcrumb =
         crate::application_navigation::active_path(&menus, active_page_id.as_deref());
@@ -80,6 +86,11 @@ pub fn ApplicationShell(
                             sidebar_collapsed.toggle();
                         },
                         PanelLeft { class: "size-5" }
+                    }
+                    span {
+                        class: "application-shell__brand-mark",
+                        aria_hidden: "true",
+                        "{brand_mark}"
                     }
                     strong { class: "application-shell__brand", "{application_label}" }
                     if let Some(edit_application) = on_edit_application {
