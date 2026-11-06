@@ -21,4 +21,4 @@ pub mod select;
 pub mod spatial;
 pub mod textarea;
 
-pub use stylesheets::UiStylesheets;
+pub use stylesheets::{UiStylesheets, ui_stylesheet};
