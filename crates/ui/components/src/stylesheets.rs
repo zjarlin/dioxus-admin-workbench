@@ -67,6 +67,32 @@ pub fn UiStylesheets(#[props(default)] relative_paths: bool) -> Element {
     }
 }
 
+/// 返回共享控件的全量样式，供 Topcoat 等同源服务端页面直接发布。
+pub fn ui_stylesheet() -> String {
+    [
+        include_str!("theme.css"),
+        include_str!("utilities.css"),
+        include_str!("workbench.css"),
+        include_str!("application_navigation.css"),
+        include_str!("application_fullscreen.css"),
+        include_str!("badge/style.css"),
+        include_str!("button/style.css"),
+        include_str!("checkbox/style.css"),
+        include_str!("collection_tree/style.css"),
+        include_str!("data_table/style.css"),
+        include_str!("dialog/style.css"),
+        include_str!("input/style.css"),
+        include_str!("navigation_icon/style.css"),
+        include_str!("select/style.css"),
+        include_str!("spatial/style.css"),
+        include_str!("textarea/style.css"),
+        include_str!("admin/theme.css"),
+        include_str!("admin/style.css"),
+        include_str!("appearance/style.css"),
+    ]
+    .join("\n")
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -98,6 +124,16 @@ mod tests {
                 "样式资源缺少稳定类名：{class_name}"
             );
         }
+    }
+
+    #[test]
+    fn topcoat_style_export_contains_the_shared_ui_palette_and_components() {
+        let stylesheet = super::ui_stylesheet();
+        assert!(stylesheet.contains("--primary-color"));
+        assert!(stylesheet.contains(".dx-button"));
+        assert!(stylesheet.contains(".dx-input"));
+        assert!(stylesheet.contains(".dx-dialog"));
+        assert!(stylesheet.contains(".admin-auth"));
     }
 
     #[test]
